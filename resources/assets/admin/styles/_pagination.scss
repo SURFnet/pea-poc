@@ -1,0 +1,17 @@
+/* Fixing the disabled state requires to be over-specific. */
+/* stylelint-disable selector-max-specificity */
+.pagination-item {
+    @apply inline-flex items-center justify-center rounded-full text-black font-semibold py-2 w-12;
+
+    &:not(:disabled):not(.disabled):hover,
+    &:not(:disabled):not(.disabled):active,
+    &:not(:disabled):not(.disabled):focus,
+    &.is-active {
+        @apply no-underline bg-blue-800 text-white;
+    }
+
+    &.disabled {
+        @apply text-gray-300 cursor-default no-underline;
+    }
+}
+/* stylelint-enable selector-max-specificity */

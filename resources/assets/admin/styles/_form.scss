@@ -1,0 +1,23 @@
+/* Styling for vue-select */
+.vs__dropdown-toggle {
+    @apply shadow-sm rounded border border-gray-300 bg-white sm:text-sm py-2 px-3 mt-1 #{!important};
+}
+
+.vs--open .vs__dropdown-toggle {
+    @apply ring-blue-400 border-blue-500 #{!important};
+}
+
+.vs__search,
+.vs__selected,
+.vs__actions {
+    @apply p-0 m-0 #{!important};
+}
+
+.vs__dropdown--error .vs__dropdown-toggle {
+    @apply border-red-300 text-red-900 placeholder-red-300 #{!important};
+}
+
+/* Styling for vue2-datepicker */
+.mx-datepicker {
+    @apply w-full #{!important};
+}

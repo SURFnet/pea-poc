@@ -1,0 +1,9 @@
+@use "sass:math";
+
+@screen md {
+    .content {
+        max-width: percentage(math.div(2, 3));
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

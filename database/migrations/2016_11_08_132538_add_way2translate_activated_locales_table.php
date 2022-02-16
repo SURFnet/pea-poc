@@ -1,0 +1,33 @@
+<?php
+
+declare(strict_types=1);
+
+use Carbon\Carbon;
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
+
+class AddWay2translateActivatedLocalesTable extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('way2translate_activated_locales', function (Blueprint $table): void {
+            $table->string('locale')->unique()->index();
+            $table->timestamps();
+        });
+
+        // add default locale
+        DB::table('way2translate_activated_locales')->insert([
+            'locale'     => Config::get('way2translate.default-locale'),
+            'created_at' => Carbon::now(),
+            'updated_at' => Carbon::now(),
+        ]);
+    }
+
+    public function down(): void
+    {
+        Schema::drop('way2translate_activated_locales');
+    }
+}

@@ -1,0 +1,216 @@
+{
+    "extends": [
+        "plugin:vue/recommended",
+        "airbnb-base",
+        "plugin:jsdoc/recommended",
+        "prettier"
+    ],
+    "plugins": [
+        "jsdoc",
+        "html",
+        "prettier"
+    ],
+    "parser": "vue-eslint-parser",
+    "parserOptions": {
+        "ecmaVersion": 2020
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "jest": true,
+        "es6": true
+    },
+    "globals": {
+        "Lang": false,
+        "route": false,
+        "config": false,
+        "trans": false,
+        "trans_choice": false
+    },
+    "rules": {
+        "prettier/prettier": [
+            "error",
+            {
+                "trailingComma": "es5",
+                "singleQuote": true,
+                "printWidth": 120
+            }
+        ],
+        "import/no-extraneous-dependencies": [
+            "error",
+            {
+                "devDependencies": [
+                    "**/webpack.mix.js"
+                ]
+            }
+        ],
+        "import/extensions": "off",
+        "vue/no-arrow-functions-in-watch": "error",
+        "vue/max-attributes-per-line": "off",
+        "vue/html-self-closing": [
+            "error",
+            {
+                "html": {
+                    "void": "any"
+                }
+            }
+        ],
+        "vue/script-setup-uses-vars": "off",
+        "max-len": "off",
+        "no-new": "off",
+        "jsdoc/require-jsdoc": [
+            "error",
+            {
+                "require": {
+                    "FunctionDeclaration": true,
+                    "MethodDefinition": true,
+                    "ClassDeclaration": true,
+                    "FunctionExpression": true
+                }
+            }
+        ],
+        "jsdoc/require-param-description": "off",
+        "jsdoc/require-returns-description": "off",
+        "jsdoc/tag-lines": "off",
+        "indent": 0,
+        "camelcase": [
+            "error",
+            {
+                "properties": "never"
+            }
+        ],
+        "semi": [
+            "warn",
+            "always"
+        ],
+        "max-params": [
+            "warn",
+            5
+        ],
+        "max-depth": [
+            "warn",
+            4
+        ],
+        "max-statements": [
+            "warn",
+            20
+        ],
+        "linebreak-style": [
+            "warn",
+            "unix"
+        ],
+        "class-methods-use-this": "off",
+        "comma-style": [
+            "warn",
+            "last"
+        ],
+        "no-mixed-spaces-and-tabs": [
+            "warn"
+        ],
+        "no-prototype-builtins": "off",
+        "no-return-assign": [
+            "error",
+            "except-parens"
+        ],
+        "no-restricted-syntax": [
+            "error",
+            "ForInStatement",
+            "LabeledStatement",
+            "WithStatement"
+        ],
+        "no-unused-vars": [
+            "error",
+            {
+                "vars": "all",
+                "args": "after-used",
+                "ignoreRestSiblings": true
+            }
+        ],
+        "prefer-const": [
+            "error",
+            {
+                "destructuring": "all"
+            }
+        ],
+        "arrow-body-style": [
+            "error",
+            "as-needed"
+        ],
+        "no-unused-expressions": [
+            "error",
+            {
+                "allowTaggedTemplates": true
+            }
+        ],
+        "no-param-reassign": [
+            "error",
+            {
+                "props": false
+            }
+        ],
+        "no-shadow": [
+            "error",
+            {
+                "hoist": "all",
+                "allow": [
+                    "resolve",
+                    "reject",
+                    "done",
+                    "next",
+                    "err",
+                    "error"
+                ]
+            }
+        ],
+        "quotes": [
+            "error",
+            "single",
+            {
+                "avoidEscape": true,
+                "allowTemplateLiterals": true
+            }
+        ],
+        "import/prefer-default-export": "off",
+        "vars-on-top": "error",
+        "vue/require-default-prop": "error",
+        "vue/singleline-html-element-content-newline": "error",
+        "vue/html-indent": [
+            "error",
+            4,
+            {
+                "attribute": 1,
+                "closeBracket": 0,
+                "alignAttributesVertically": false,
+                "ignores": []
+            }
+        ],
+        "vue/multi-word-component-names": "off"
+    },
+    "settings": {
+        "import/resolver": {
+            "webpack": {
+                "config": "./node_modules/laravel-mix/setup/webpack.config.js"
+            },
+            "alias": {
+                "map": [
+                    [
+                        "@",
+                        "./src"
+                    ]
+                ],
+                "extensions": [
+                    ".js",
+                    ".vue"
+                ]
+            },
+            "resolve": {
+                "extensions": [
+                    "*",
+                    ".js",
+                    ".vue",
+                    ".json"
+                ]
+            }
+        }
+    }
+}

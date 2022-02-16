@@ -1,0 +1,45 @@
+#OS
+.DS_Store
+
+#IDE
+.idea
+_ide_helper.php
+_ide_helper_models.php
+.phpstorm.meta.php
+.php-cs-fixer.cache
+.vscode
+
+#assets
+*/**/node_modules/*
+public_html/dist/
+public_html/vendor/datatables/buttons.server-side.js
+
+#framework
+/vendor
+bootstrap/cache/(?!(index\.html|\.htaccess|\.gitignore)$).+
+.environment/(?!(\.default\.env)$).+
+.env
+.env.backup
+.env.testing
+
+#test artifacts
+tests/Browser/console/(?!(index\.html|\.htaccess|\.gitignore)$).+
+tests/Browser/screenshots/(?!(index\.html|\.htaccess|\.gitignore)$).+
+.phpunit.result.cache
+coverage/
+report/
+public_html/tests-report/
+
+#build
+build/
+phpinsights.php
+phpcs_compatibility.xml
+phpcs_security.xml
+
+# special rules for cachefolders - we do want to make sure they are created
+# we just don't want the contents tracked besides the ignores.
+storage/debugbar/(?!(index\.html|\.htaccess|\.gitignore)$).+
+storage/framework/views/(?!(index\.html|\.htaccess|\.gitignore)$).+
+storage/framework/sessions/(?!(index\.html|\.htaccess|\.gitignore)$).+
+storage/framework/cache/(?!(index\.html|\.htaccess|\.gitignore)$).+
+storage/logs/(?!(index\.html|\.htaccess|\.gitignore)$).+

@@ -1,0 +1,29 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Illuminate\Contracts\Validation\Rule;
+
+class {{ class }} implements Rule
+{
+    public function __construct()
+    {
+        //
+    }
+
+    /**
+     * @param mixed  $value
+     * @param string $value
+     */
+    public function passes($attribute, $value): void
+    {
+        //
+    }
+
+    public function message(): string
+    {
+        return 'The validation error message.';
+    }
+}

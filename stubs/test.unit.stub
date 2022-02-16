@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{ namespace }};
+
+use Tests\TestCase;
+
+class {{ class }} extends TestCase
+{
+    /** @test */
+    public function test_example(): void
+    {
+        $this->assertTrue(true);
+    }
+}

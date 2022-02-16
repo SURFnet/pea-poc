@@ -1,0 +1,21 @@
+.container {
+    @apply max-w-7xl mx-auto px-4;
+}
+
+.container-xl {
+    @apply max-w-xxl mx-auto px-4;
+}
+
+@screen sm {
+    .container,
+    .container-xl {
+        @apply px-6;
+    }
+}
+
+@screen lg {
+    .container,
+    .container-xl {
+        @apply px-8;
+    }
+}

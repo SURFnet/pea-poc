@@ -1,0 +1,28 @@
+html {
+    @apply text-base text-gray-500;
+}
+
+body {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+a {
+    @apply text-blue-800;
+
+    &:hover {
+        @apply underline;
+    }
+}
+
+ul {
+    @apply list-disc pl-6;
+}
+
+.readable-text {
+    max-width: 45rem;
+}
+
+.bg-app {
+    background-color: #f7f8fc;
+}

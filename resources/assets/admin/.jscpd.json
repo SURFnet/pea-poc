@@ -1,0 +1,12 @@
+{
+    "threshold": 20,
+    "reporters": [
+        "json",
+        "console"
+    ],
+    "ignore": [
+        "**/__snapshots__/**"
+    ],
+    "absolute": true,
+    "gitignore": true
+}

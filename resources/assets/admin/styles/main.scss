@@ -1,0 +1,41 @@
+/*
+ * # Framework
+ */
+@import 'tailwindcss/base';
+
+/*
+ * # Vendor
+ * External packages
+ */
+
+/*
+ * # Generic
+ */
+@import 'generic/base';
+@import 'generic/page';
+@import 'generic/heading';
+@import 'generic/content';
+@import 'generic/container';
+@import 'generic/text';
+
+/*
+ * # Components
+ */
+@import 'tailwindcss/components';
+@import 'container';
+@import 'dropdown';
+@import 'form';
+@import 'hr';
+@import 'pagination';
+@import 'mark';
+@import 'bottom-heavy-border';
+
+/*
+ * # Utilities
+ */
+@import 'tailwindcss/utilities';
+@import 'utilities/width';
+@import 'utilities/font';
+@import 'utilities/container';
+@import 'utilities/aspect-ratio-img';
+@import 'utilities/print';

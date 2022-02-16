@@ -1,0 +1,36 @@
+includes:
+    - ./vendor/nunomaduro/larastan/extension.neon
+
+parameters:
+    level: max
+
+    paths:
+        - app
+        - config
+        - tests
+        - database
+        - modules
+        - routes
+
+    ignoreErrors:
+        # Macro support false positives
+        - '#Call to static method register\(\) on an unknown class Diglactic\\Breadcrumbs\\Breadcrumbs.#'
+
+        # Unexplainable false positives
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<Illuminate\\Database\\Eloquent\\Model\>|Illuminate\Database\\Eloquent\\Model::(.*)\(\).#'
+        - '#(.*) \(App\\Models\\(.*)\) does not accept Illuminate\\Database\\Eloquent\\Collection\<Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model.#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Factories\\Factory::(.*)\(\)#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::(.*).#'
+        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany::(.*).#'
+
+        # Mockery causes issues
+        - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(.*).#'
+        - '#Parameter (.*) expects (.*), Mockery\\LegacyMockInterface given.#'
+
+    checkMissingIterableValueType: false
+    checkUnionTypes: false
+
+    universalObjectCratesClasses:
+        # This can be removed once we start annotating our models, otherwise properties and methods can not be resolved properly
+        - Illuminate\Database\Eloquent\Model
+        - Laravel\Socialite\Contracts\User

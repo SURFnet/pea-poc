@@ -1,0 +1,25 @@
+@screen print {
+    .print-no-background {
+        // stylelint-disable declaration-no-important
+        @apply bg-none #{!important};
+        // stylelint-enable declaration-no-important
+    }
+}
+
+@media print {
+    a {
+        page-break-inside: avoid;
+    }
+
+    body,
+    html,
+    .container,
+    .app,
+    .page {
+        display: block;
+        height: 100%;
+        // stylelint-disable declaration-no-important
+        overflow: visible !important;
+        // stylelint-enable declaration-no-important
+    }
+}

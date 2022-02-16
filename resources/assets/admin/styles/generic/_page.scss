@@ -1,0 +1,7 @@
+.page {
+    @apply mb-16;
+
+    @screen lg {
+        @apply mb-32;
+    }
+}
