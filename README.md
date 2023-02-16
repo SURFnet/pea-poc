@@ -22,6 +22,7 @@
 - Link the storage: `artisan storage:link`
 - Run the asset build: `./buildHook.sh $PWD`
 - Import the translations: `artisan w2w:import-translations`
+- Export the translations for Javascript: `artisan w2w:export-translations`
 
 #### Development
 - Create a database
@@ -31,6 +32,7 @@
 - Properly fill in the `.env` file
 - Run the migrations and seeders: `artisan migrate --seed` (it will handle the bootstrapping and linking of the storage as well)
 - Run the asset build: `./buildHook.sh $PWD --continue`
+- Export the translations for Javascript: `artisan w2w:export-translations`
 
 ## Storage
 
