@@ -15,12 +15,12 @@ jobs:
     if: ${{ github.actor != 'dependabot[bot]' }}
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set Up PHP and Tools
         uses: shivammathur/setup-php@master
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           tools: composer:v2
           coverage: none
 
@@ -38,17 +38,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set Up PHP and Tools
         uses: shivammathur/setup-php@master
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           tools: composer:v2, phpcs, php-cs-fixer, phpmd, phpcpd
           coverage: none
 
       - name: Install required NVM version
-        run: . ~/.nvm/nvm.sh && nvm install 14
+        run: . ~/.nvm/nvm.sh && nvm install 20
 
       - name: Syntax Errors
         run: find app database tests config routes -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
@@ -73,12 +73,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set Up PHP and Tools
         uses: shivammathur/setup-php@master
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           tools: composer:v2
           coverage: none
 
@@ -100,7 +100,7 @@ jobs:
           - 13306:3306
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Initialize the Database
         run: |
@@ -110,7 +110,7 @@ jobs:
       - name: Set Up PHP and Tools
         uses: shivammathur/setup-php@master
         with:
-          php-version: "8.0"
+          php-version: "8.1"
           extensions: bz2, bcmath, curl, exif, gd, imagick, imap, intl, mysqli, pcntl, pcov, pdo_mysql, soap, xmlrpc, xsl, zip, iconv, pdo
           tools: composer:v2
           coverage: pcov
