@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Models\Category;
+use App\Models\ContentPage;
+use App\Models\CustomField;
+use App\Models\Institute;
+use App\Models\Tag;
 use App\Models\Tool;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Way2Translate\Models\Translation;
 
-/** @extends JsonResource<\App\Models\User> */
+/** @mixin \App\Models\User */
 class UserResource extends JsonResource
 {
     /**
@@ -31,13 +34,16 @@ class UserResource extends JsonResource
             'roles' => $this->getRoles(),
 
             'permissions' => [
-                'manageCategories'   => $this->can('viewAll', Category::class),
-                'manageOurTools'     => $this->can('manageOur', Tool::class),
-                'manageTranslations' => $this->can('viewAny', Translation::class),
+                'manageCustomFields'    => $this->can('viewAll', CustomField::class),
+                'manageOurTools'        => $this->can('manageOur', Tool::class),
+                'manageTranslations'    => $this->can('viewAny', Translation::class),
+                'managePages'           => $this->can('canManage', ContentPage::class),
+                'impersonateInstitutes' => $this->can('impersonate', Institute::class),
 
-                'viewAllTools'      => $this->can('viewAll', Tool::class),
-                'viewAllOurTools'   => $this->can('viewAllOur', Tool::class),
-                'viewAllOtherTools' => $this->can('viewAllOther', Tool::class),
+                'viewAllTools'                => $this->can('viewAll', Tool::class),
+                'viewAllToolsWithinInstitute' => $this->can('viewAllWithinInstitute', Tool::class),
+
+                'viewAllTags' => $this->can('viewAll', Tag::class),
             ],
         ];
     }

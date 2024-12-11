@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Actions\Institute\StopImpersonatingAction;
 use App\Helpers\LoginRedirect;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -27,13 +28,23 @@ class AccountController extends Controller
             abort(403);
         }
 
-        Auth::login(User::where('name', 'PAQT Admin')->firstOrFail());
+        $user = User::where('name', 'PAQT Admin')->firstOrFail();
+        Auth::login($user);
+
+        (new StopImpersonatingAction())->execute(Auth::user());
 
         return LoginRedirect::doRedirect();
     }
 
     public function logout(): RedirectResponse
     {
+        $user = Auth::user();
+        if ($user->isImpersonating()) {
+            (new StopImpersonatingAction())->execute($user);
+
+            return redirect()->route('home.index');
+        }
+
         Auth::logout();
 
         return redirect()->route('account.login');

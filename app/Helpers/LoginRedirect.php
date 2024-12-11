@@ -7,6 +7,7 @@ namespace App\Helpers;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Route;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 class LoginRedirect
@@ -24,6 +25,8 @@ class LoginRedirect
             throw new RouteNotFoundException('Default route specified in config does not exist.');
         }
 
-        return redirect()->route($route);
+        $url = LaravelLocalization::localizeUrl(route($route), $user->language);
+
+        return redirect($url);
     }
 }

@@ -1,6 +1,10 @@
 <template>
     <div>
-        <InputLabel v-if="label" :for="id" :required="required">
+        <InputLabel
+            v-if="label"
+            :for="id"
+            :required="required"
+        >
             {{ label }}
         </InputLabel>
 
@@ -16,14 +20,23 @@
                 @change="updateValue"
             />
 
-            <HelpText :text="text" class="ml-3" />
+            <HelpText
+                :text="text"
+                class="ml-3"
+            />
         </div>
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -45,8 +58,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `check-inline-input-${this._uid}`;
+                return `check-inline-input-${uniqueId()}`;
             },
         },
         value: {
@@ -107,13 +119,6 @@ export default {
         },
     },
     methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
-        },
-
         /**
          * Update with the the chosen option.
          *

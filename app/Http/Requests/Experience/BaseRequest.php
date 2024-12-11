@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Requests\Experience;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 abstract class BaseRequest extends FormRequest
 {
@@ -14,8 +13,7 @@ abstract class BaseRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'rating'  => ['required', Rule::in(config('validation.experience.rating.in'))],
-            'title'   => ['nullable', 'db_string'],
+            'title'   => ['db_string', 'required'],
             'message' => ['nullable', 'string', 'max:' . config('validation.experience.message.max')],
         ];
     }

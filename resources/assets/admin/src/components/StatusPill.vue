@@ -1,5 +1,7 @@
 <template>
-    <span :class="pillClasses" />
+    <span :class="pillClasses">
+        <slot />
+    </span>
 </template>
 
 <script>

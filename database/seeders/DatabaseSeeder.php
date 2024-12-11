@@ -17,8 +17,14 @@ class DatabaseSeeder extends Seeder
 
             PredefinedToolSeeder::class,
             ToolSeeder::class,
-            CategorySeeder::class,
             ExperienceSeeder::class,
+
+            LanguageSeeder::class,
+            PendingToolEditSeeder::class,
+            ToolLogSeeder::class,
+            TagSeeder::class,
+            TaggableSeeder::class,
+            ContentPageSeeder::class,
         ]);
     }
 }

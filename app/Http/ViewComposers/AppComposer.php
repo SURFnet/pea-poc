@@ -6,7 +6,6 @@ namespace App\Http\ViewComposers;
 
 use App\Helpers\Auth;
 use Illuminate\View\View;
-use Modules\Way2Translate\Helpers\Js;
 use Modules\Way2Translate\Models\Locale;
 
 class AppComposer
@@ -19,7 +18,8 @@ class AppComposer
             $this->data = [
                 'activeLocales' => Locale::getActive()->sortBy('native'),
                 'currentUser'   => Auth::user(),
-                'langJsUrl'     => Js::getLangUrl(),
+                'langJsUrl'     => route('way2translate.lang'),
+                'piwikKey'      => config('constants.piwik_key'),
             ];
         }
 

@@ -4,14 +4,11 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
-use App\Traits\Resources\WithImage;
-use Illuminate\Http\Resources\Json\JsonResource;
+use App\Enums\InstituteTool\Status;
+use App\Helpers\Locale;
 
-/** @extends JsonResource<\App\Models\Tool> */
-class ToolIndexResource extends JsonResource
+class ToolIndexResource extends BaseToolIndexResource
 {
-    use WithImage;
-
     /**
      * @param \Illuminate\Http\Request $request
      *
@@ -19,14 +16,29 @@ class ToolIndexResource extends JsonResource
      */
     public function toArray($request): array
     {
+        $viewPermission = $this->institute_tool_id ? 'viewOur' : 'viewOther';
+
+        $data = [
+            ...parent::toArray($request),
+
+            'description_short' => Locale::getLocalizedFieldValue($this->resource, 'description_short'),
+            'total_experiences' => $this->experiences->count(),
+
+            'permissions' => [
+                'view' => $request->user()->can($viewPermission, $this->resource),
+            ],
+        ];
+
+        if (!$this->institute_tool_id) {
+            return $data;
+        }
+
         return [
-            'id' => $this->id,
-
-            'name' => $this->name,
-
-            'categories' => $this->whenLoaded('categories', fn () => CategoryResource::collection($this->categories)),
-
-            'image_url' => $this->getImageUrl($this->image_filename, true),
+            ...$data,
+            'institute' => [
+                'status'         => $this->status_institute,
+                'status_display' => Status::getTranslation($this->status_institute ?? Status::UNRATED),
+            ],
         ];
     }
 }

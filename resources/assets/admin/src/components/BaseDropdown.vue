@@ -1,13 +1,21 @@
 <template>
-    <div ref="dropdown" class="dropdown">
-        <slot name="button" :isOpen="open" :toggle="toggle">
+    <div
+        ref="dropdown"
+        class="dropdown"
+    >
+        <slot
+            name="button"
+            :is-open="open"
+            :toggle="toggle"
+        >
             <Btn
                 class="flex items-center font-bold"
                 :variant="variant"
                 :class="{ 'is-active': open }"
                 @click="toggle"
-                v-text="buttonText"
-            />
+            >
+                {{ buttonText }}
+            </Btn>
         </slot>
 
         <transition
@@ -21,7 +29,13 @@
             <div
                 v-if="open"
                 class="transform transition-all | z-10"
-                :class="[positionClass, { 'dropdown-menu': absolute === true }]"
+                :class="[
+                    positionClass,
+                    {
+                        'dropdown-menu': absolute === true,
+                        '-left-32': pushLeft,
+                    },
+                ]"
             >
                 <div :class="{ 'dropdown-menu': absolute === false }">
                     <slot />
@@ -62,6 +76,10 @@ export default {
             default: 'default',
         },
         absolute: {
+            type: Boolean,
+            default: false,
+        },
+        pushLeft: {
             type: Boolean,
             default: false,
         },
@@ -123,14 +141,12 @@ export default {
 
             this.open = !this.open;
         },
-
         /**
          * Close the dropdown menu.
          */
         close() {
             this.open = false;
         },
-
         /**
          * Event for closing the dropdown when clicking outside or on a dropdown item like a link or button.
          *

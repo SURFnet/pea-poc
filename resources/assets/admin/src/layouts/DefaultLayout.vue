@@ -3,7 +3,10 @@
         <NotificationContainer />
 
         <header>
-            <MainMenu />
+            <MainMenu
+                :locale="$page.props.app.locale"
+                :active-locales="$page.props.app.activeLocales"
+            />
         </header>
 
         <main class="flex-grow">

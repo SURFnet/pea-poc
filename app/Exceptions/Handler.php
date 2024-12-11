@@ -23,7 +23,7 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that are not reported.
      *
-     * @var array
+     * @var array<int, class-string<\Throwable>>
      */
     protected $dontReport = [
         HttpException::class,
@@ -35,17 +35,18 @@ class Handler extends ExceptionHandler
     /**
      * A list of the exception types that should be logged at info level.
      *
-     * @var array
+     * @var array<int,string>
      */
     protected $reportAsInfo = [
         AuthorizationException::class,
         TokenMismatchException::class,
+        SurfConextException::class,
     ];
 
     /**
      * A list of the inputs that are never flashed for validation exceptions.
      *
-     * @var array
+     * @var array<int,string>
      */
     protected $dontFlash = [
         'password',

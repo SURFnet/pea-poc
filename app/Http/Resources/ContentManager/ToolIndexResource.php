@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Resources\ContentManager;
 
-use App\Http\Resources\FeatureResource;
-use App\Http\Resources\ToolIndexResource as BaseToolIndexResource;
+use App\Http\Resources\BaseToolIndexResource;
+use App\Http\Resources\TagResource;
+use App\Models\ConceptTool;
 
 class ToolIndexResource extends BaseToolIndexResource
 {
@@ -16,15 +17,29 @@ class ToolIndexResource extends BaseToolIndexResource
      */
     public function toArray($request): array
     {
-        return array_merge(parent::toArray($request), [
-            'status'         => $this->status,
-            'status_display' => $this->status_display,
+        $tool = $this->getTool();
+        $concept = $this->getConceptTool();
 
-            'features' => $this->whenLoaded('features', fn () => FeatureResource::collection($this->features)),
+        return [
+            ...$this->getToolData($concept ?? $tool),
+
+            'id' => $tool->id,
+
+            'status'         => $tool->status,
+            'status_display' => $tool->status_display,
+
+            'features' => TagResource::collection($tool->features()),
+
+            'has_concept' => $concept !== null,
 
             'permissions' => [
-                'update' => $request->user()->can('update', $this->resource),
+                'update' => $request->user()->can('update', $tool),
             ],
-        ]);
+        ];
+    }
+
+    protected function getConceptTool(): ?ConceptTool
+    {
+        return $this->resource->concept;
     }
 }

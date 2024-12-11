@@ -21,22 +21,18 @@ abstract class BaseSURFUser extends AbstractUser
     protected function baseUser(array $overrides = []): array
     {
         return array_merge([
-            'id'                    => null,
-            'name'                  => 'Devops Way2Web',
-            'email'                 => null,
-            'avatar'                => null,
-            'nickname'              => null,
-            'acr'                   => 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
-            'eduperson_affiliation' => [
-                0 => 'affiliate',
-            ],
+            'id'                      => null,
+            'name'                    => 'Devops PAQT',
+            'email'                   => null,
+            'avatar'                  => null,
+            'nickname'                => null,
+            'acr'                     => 'urn:oasis:names:tc:SAML:2.0:ac:classes:unspecified',
+            'eduperson_affiliation'   => ['employee'],
             'schac_home_organization' => 'eduid.nl',
             'sub'                     => 'asdd3d3qdw3dqd3q3dq3d',
-            'uids'                    => [
-                0 => 'asdaa33-dcdf-4234-21b5-2dasdasd3211f3feb',
-            ],
-            'updated_at'             => 1636371429,
-            'edumember_is_member_of' => array_values(config('services.surfconext.roles')),
+            'uids'                    => ['asdaa33-dcdf-4234-21b5-2dasdasd3211f3feb'],
+            'updated_at'              => 1636371429,
+            'edumember_is_member_of'  => array_values(config('services.surfconext.roles')),
         ], $overrides);
     }
 

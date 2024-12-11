@@ -1,18 +1,24 @@
 <template>
-    <div class="flex flew-row flex-wrap items-center">
-        <TagPill v-for="item in itemSet(itemList)" :key="item.id" class="mr-4">
+    <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+        <TagPill
+            v-for="item in itemSet(itemList)"
+            :key="item.id"
+        >
             {{ item.name }}
         </TagPill>
-        <div class="cursor-pointer" @click="toggleShownItems">
-            <TagPill v-if="remainingItems(itemList)">
-                {{ remainingItems(itemList) }}
-            </TagPill>
-        </div>
+
+        <TagPill
+            v-if="remainingItems(itemList)"
+            class="cursor-pointer"
+            @click.native="toggleShownItems"
+        >
+            {{ remainingItems(itemList) }}
+        </TagPill>
     </div>
 </template>
 
 <script>
-import _ from 'lodash';
+import take from 'lodash/take';
 import TagPill from '@/components/TagPill';
 
 const numberOfTags = 2;
@@ -47,7 +53,7 @@ export default {
          */
         itemSet(items) {
             if (this.expanded === false) {
-                return _.take(items, numberOfTags);
+                return take(items, numberOfTags);
             }
 
             return items;

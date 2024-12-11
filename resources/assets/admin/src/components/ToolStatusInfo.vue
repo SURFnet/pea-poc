@@ -1,12 +1,22 @@
 <template>
     <div>
-        <span :class="pillClasses" @click.prevent="modalOpen = true">
+        <span
+            :class="pillClasses"
+            @click.prevent="modalOpen = true"
+        >
             {{ text }}
 
-            <FontAwesomeIcon icon="info-circle" class="opacity-25 | ml-1" />
+            <FontAwesomeIcon
+                icon="info-circle"
+                class="opacity-25 | ml-1"
+            />
         </span>
 
-        <StatusLegendModal :status="status" :open="modalOpen" @closed="modalOpen = false" />
+        <StatusLegendModal
+            :status="status"
+            :open="modalOpen"
+            @closed="modalOpen = false"
+        />
     </div>
 </template>
 
@@ -30,11 +40,7 @@ export default {
              * @returns {boolean}
              */
             validator(value) {
-                return (
-                    ['recommended', 'supported', 'free_to_use', 'not_recommended', 'prohibited', 'unrated'].indexOf(
-                        value
-                    ) !== -1
-                );
+                return ['allowed', 'disallowed', 'allowed_under_conditions', 'unrated'].indexOf(value) !== -1;
             },
         },
         text: {
@@ -64,12 +70,11 @@ export default {
             `.trim();
 
             const variants = {
-                recommended: 'recommended',
-                supported: 'supported',
-                free_to_use: 'free-to-use',
-                not_recommended: 'not-recommended',
-                prohibited: 'prohibited',
                 unrated: 'unrated',
+                unpublished: 'unpublished',
+                allowed: 'allowed',
+                allowed_under_conditions: 'allowed-under-conditions',
+                disallowed: 'disallowed',
             };
 
             const pillClasses = [genericBase];
@@ -83,24 +88,16 @@ export default {
 </script>
 
 <style scoped>
-.recommended {
+.allowed {
     background-color: #b5f2c6;
 }
 
-.supported {
-    background-color: #b3e5ff;
-}
-
-.free-to-use {
+.allowed-under-conditions {
     background-color: #ffeca7;
 }
 
-.not-recommended {
-    background-color: #ffb75c;
-}
-
-.prohibited {
-    background-color: #ffc5c1;
+.disallowed {
+    background-color: #fca5a5;
 }
 
 .unrated {

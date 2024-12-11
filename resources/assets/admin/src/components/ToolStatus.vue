@@ -21,17 +21,7 @@ export default {
              * @returns {boolean}
              */
             validator(value) {
-                return (
-                    [
-                        'recommended',
-                        'supported',
-                        'free_to_use',
-                        'not_recommended',
-                        'prohibited',
-                        'unrated',
-                        'unpublished',
-                    ].indexOf(value) !== -1
-                );
+                return ['unrated', 'unpublished', 'allowed', 'allowed_under_conditions', 'disallowed'].includes(value);
             },
         },
         text: {
@@ -51,13 +41,11 @@ export default {
             `.trim();
 
             const variants = {
-                recommended: 'recommended',
-                supported: 'supported',
-                free_to_use: 'free-to-use',
-                not_recommended: 'not-recommended',
-                prohibited: 'prohibited',
                 unrated: 'unrated',
                 unpublished: 'unpublished',
+                allowed: 'allowed',
+                allowed_under_conditions: 'allowed-under-conditions',
+                disallowed: 'disallowed',
             };
 
             const pillClasses = [genericBase];
@@ -71,24 +59,16 @@ export default {
 </script>
 
 <style scoped>
-.recommended {
+.allowed {
     background-color: #b5f2c6;
 }
 
-.supported {
-    background-color: #b3e5ff;
-}
-
-.free-to-use {
+.allowed-under-conditions {
     background-color: #ffeca7;
 }
 
-.not-recommended {
-    background-color: #ffb75c;
-}
-
-.prohibited {
-    background-color: #ffc5c1;
+.disallowed {
+    background-color: #fca5a5;
 }
 
 .unrated {

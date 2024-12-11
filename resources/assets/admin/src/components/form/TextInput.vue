@@ -1,6 +1,12 @@
 <template>
     <div>
-        <InputLabel v-if="label && !placeholder" :for="id" :required="required" :large-label="largeLabel">
+        <InputLabel
+            v-if="label && !placeholder"
+            :for="id"
+            :required="required"
+            :large-label="largeLabel"
+            :tool-tip="toolTip"
+        >
             {{ label }}
         </InputLabel>
 
@@ -17,13 +23,22 @@
             @input="$emit('input', $event.target.value)"
         />
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -45,8 +60,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `text-input-${this._uid}`;
+                return `text-input-${uniqueId()}`;
             },
         },
         type: {
@@ -58,6 +72,10 @@ export default {
             default: null,
         },
         label: {
+            type: String,
+            default: null,
+        },
+        toolTip: {
             type: String,
             default: null,
         },
@@ -116,14 +134,6 @@ export default {
             }
 
             return inputClasses.join(' | ');
-        },
-    },
-    methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
         },
     },
 };

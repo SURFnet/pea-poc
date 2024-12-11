@@ -16,6 +16,15 @@ class ExperiencePolicy
         return $currentUser->isTeacher();
     }
 
+    public function seeUser(User $currentUser, Experience $experience): bool
+    {
+        if ($currentUser->is($experience->user)) {
+            return true;
+        }
+
+        return $currentUser->institute->is($experience->user->institute);
+    }
+
     public function update(User $currentUser, Experience $experience): bool
     {
         return $experience->user()->is($currentUser);

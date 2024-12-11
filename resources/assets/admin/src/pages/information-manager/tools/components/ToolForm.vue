@@ -2,233 +2,533 @@
     <div class="md:px-8 md:pt-4">
         <h3
             class="text-xl font-semibold leading-6 text-gray-900 | mb-4"
-            v-text="trans('page.information-manager.tool.form.headings.general')"
+            v-text="trans('page.information-manager.tool.form.headings.product')"
         />
-        <p v-text="trans('page.information-manager.tool.form.marked-as-fit')" />
-        <Btn
-            class="mb-10"
-            inertia
-            :href="changeToProhibitedUrl"
-            variant="default-dark"
-            v-text="trans('page.information-manager.tool.form.change-to-unfit')"
-        />
+
+        <p class="text-gray-900 | pb-5">
+            {{ trans('page.information-manager.tool.form.marked-as-fit') }}
+
+            <ToolTip
+                v-if="markedAsFitTooltip"
+                :text="markedAsFitTooltip"
+            />
+        </p>
+
         <div class="mb-10">
+            <!-- eslint-disable vue/no-undef-properties -->
             <RadioInputToolStatus
                 ref="status"
                 v-model="form.status"
                 :options="selectFromArray(statusOptions)"
                 :label="trans('institute.tool.attributes.status')"
                 :error="form.errors.status"
+                :tool-tip="trans('institute.tool.tooltip.status')"
+                large-label
             />
+            <!-- eslint-enable vue/no-undef-properties -->
         </div>
 
         <FormGroup>
             <FormColumn first>
-                <CheckGroupInput
+                <!-- eslint-disable vue/no-undef-properties -->
+                <TagInput
                     ref="categories"
                     v-model="internalForm.categories"
-                    name="categories"
-                    :label="trans('institute.tool.attributes.categories', { institute: institute.short_name })"
-                    :options="selectFromArray(categories)"
+                    :label="trans('institute.tool.attributes.categories')"
                     :error="form.errors.categories"
+                    :available-tags="categories"
+                    :tool-tip="trans('institute.tool.tooltip.categories')"
+                    large-label
+                />
+                <!-- eslint-enable vue/no-undef-properties -->
+
+                <template v-if="disallowed">
+                    <RichText
+                        v-model="internalForm.why_unfit_en"
+                        :label="trans('institute.tool.attributes.why_unfit_en')"
+                        :error="internalForm.errors.why_unfit_en"
+                        :tool-tip="trans('institute.tool.tooltip.why_unfit_en')"
+                    />
+                    <!-- eslint-enable vue/no-undef-properties -->
+
+                    <RichText
+                        v-model="internalForm.why_unfit_nl"
+                        :label="trans('institute.tool.attributes.why_unfit_nl')"
+                        :error="internalForm.errors.why_unfit_nl"
+                        :tool-tip="trans('institute.tool.tooltip.why_unfit_nl')"
+                    />
+                </template>
+
+                <RichText
+                    ref="conditions_en"
+                    v-model="internalForm.conditions_en"
+                    name="conditions_en"
+                    :label="trans('institute.tool.attributes.conditions_en')"
+                    :error="form.errors.conditions_en"
+                    :tool-tip="trans('institute.tool.tooltip.conditions_en')"
+                    large-label
+                />
+
+                <RichText
+                    ref="conditions_nl"
+                    v-model="internalForm.conditions_nl"
+                    name="conditions_nl"
+                    :label="trans('institute.tool.attributes.conditions_nl')"
+                    :error="form.errors.conditions_nl"
+                    :tool-tip="trans('institute.tool.tooltip.conditions_nl')"
+                    large-label
+                />
+
+                <div>
+                    <TagInput
+                        ref="alternative_tools_ids"
+                        v-model="internalForm.alternative_tools_ids"
+                        :label="trans('institute.tool.attributes.alternative_tools')"
+                        :error="form.errors.alternative_tools_ids"
+                        :available-tags="alternativeTools"
+                        :tool-tip="trans('institute.tool.tooltip.alternative_tools')"
+                        large-label
+                    />
+
+                    <div
+                        v-if="prohibitedAlternativeTools?.length"
+                        class="space-y-2 | mt-2 mx-4 | rounded | p-4 bg-slate-50"
+                    >
+                        <span v-text="trans('institute.tool.attributes.prohibited_tools')" />
+
+                        <ul>
+                            <li
+                                v-for="prohibitedAlternativeTool in prohibitedAlternativeTools"
+                                :key="prohibitedAlternativeTool.id"
+                                v-text="prohibitedAlternativeTool.name"
+                            />
+                        </ul>
+                    </div>
+                </div>
+
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'product')"
+                    :key="`en_${field.id}`"
+                    :ref="`custom_field_${field.id}_en`"
+                    v-model="field.value_en"
+                    :name="`custom_field_${field.id}_en`"
+                    :label="translatedCustomFieldTitle(field, 'en')"
+                    :error="form.errors.custom_fields"
+                    large-label
+                />
+
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'product')"
+                    :key="`nl_${field.id}`"
+                    :ref="`custom_field_${field.id}_nl`"
+                    v-model="field.value_nl"
+                    :name="`custom_field_${field.id}_nl`"
+                    :label="translatedCustomFieldTitle(field, 'nl')"
+                    :error="form.errors.custom_fields"
                     large-label
                 />
             </FormColumn>
         </FormGroup>
 
-        <FormGroup :title="trans('page.information-manager.tool.form.headings.description')">
+        <FormGroup
+            :title="trans('page.information-manager.tool.form.headings.technical')"
+            gray-background
+        >
             <FormColumn first>
-                <TextareaInput
-                    ref="description_1"
-                    v-model="internalForm.description_1"
-                    name="description_1"
-                    :label="trans('institute.tool.attributes.description_1')"
-                    :error="form.errors.description_1"
+                <RichText
+                    ref="links_with_other_tools_en"
+                    v-model="internalForm.links_with_other_tools_en"
+                    :label="trans('institute.tool.attributes.links_with_other_tools_en')"
+                    :error="form.errors.links_with_other_tools_en"
+                    :tool-tip="trans('institute.tool.tooltip.links_with_other_tools_en')"
                     large-label
                 />
-            </FormColumn>
-            <FormColumn>
-                <FileInput
-                    ref="description_1_image_filename"
-                    name="file"
-                    :label="trans('institute.tool.attributes.description_1_image_filename')"
-                    :error="internalForm.errors.description_1_image_filename"
-                    :image-preview="internalForm.description_1_image_url"
-                    large-label
-                    :text="trans('page.information-manager.tool.form.captions.image-format')"
-                    @change="(file) => (internalForm.description_1_image_filename = file)"
-                />
-            </FormColumn>
-        </FormGroup>
 
-        <FormGroup>
-            <FormColumn first>
-                <TextareaInput
-                    ref="description_2"
-                    v-model="internalForm.description_2"
-                    name="description_2"
-                    :label="trans('institute.tool.attributes.description_2')"
-                    :error="form.errors.description_2"
+                <RichText
+                    ref="links_with_other_tools_nl"
+                    v-model="internalForm.links_with_other_tools_nl"
+                    :label="trans('institute.tool.attributes.links_with_other_tools_nl')"
+                    :error="form.errors.links_with_other_tools_nl"
+                    :tool-tip="trans('institute.tool.tooltip.links_with_other_tools_nl')"
                     large-label
                 />
             </FormColumn>
-            <FormColumn>
-                <FileInput
-                    ref="description_2_image_filename"
-                    name="file"
-                    :label="trans('institute.tool.attributes.description_2_image_filename')"
-                    :error="internalForm.errors.description_2_image_filename"
-                    :image-preview="internalForm.description_2_image_url"
-                    large-label
-                    :text="trans('page.information-manager.tool.form.captions.image-format')"
-                    @change="(file) => (internalForm.description_2_image_filename = file)"
-                />
-            </FormColumn>
-        </FormGroup>
 
-        <FormGroup :title="trans('page.information-manager.tool.form.headings.extra-information')">
-            <FormColumn first>
+            <FormColumn>
                 <TextInput
-                    ref="extra_information_title"
-                    v-model="internalForm.extra_information_title"
-                    name="extra_information_title"
-                    :label="trans('institute.tool.attributes.extra_information_title')"
-                    :error="form.errors.extra_information_title"
+                    ref="sla_url"
+                    v-model="internalForm.sla_url"
+                    name="sla_url"
+                    :label="trans('institute.tool.attributes.sla_url')"
+                    :error="form.errors.sla_url"
+                    :tool-tip="trans('institute.tool.tooltip.sla_url')"
                     large-label
                 />
+            </FormColumn>
 
-                <TextareaInput
-                    ref="extra_information"
-                    v-model="internalForm.extra_information"
-                    name="extra_information"
-                    :label="trans('institute.tool.attributes.extra_information')"
-                    :error="form.errors.extra_information"
+            <FormColumn first>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'technical')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_en`"
+                    v-model="field.value_en"
+                    :name="`custom_field_${field.id}_en`"
+                    :label="translatedCustomFieldTitle(field, 'en')"
+                    :error="form.errors.custom_fields"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'technical')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_nl`"
+                    v-model="field.value_nl"
+                    :name="`custom_field_${field.id}_nl`"
+                    :label="translatedCustomFieldTitle(field, 'nl')"
+                    :error="form.errors.custom_fields"
                     large-label
                 />
             </FormColumn>
         </FormGroup>
 
-        <FormGroup :title="trans('page.information-manager.tool.form.headings.support')">
+        <FormGroup :title="trans('page.information-manager.tool.form.headings.privacy_and_security')">
             <FormColumn first>
                 <TextInput
-                    ref="support_title_1"
-                    v-model="internalForm.support_title_1"
-                    name="support_title_1"
-                    :label="trans('institute.tool.attributes.support_title_1')"
-                    :error="form.errors.support_title_1"
+                    ref="privacy_contact"
+                    v-model="internalForm.privacy_contact"
+                    name="privacy_contact"
+                    :label="trans('institute.tool.attributes.privacy_contact')"
+                    :error="form.errors.privacy_contact"
+                    :tool-tip="trans('institute.tool.tooltip.privacy_contact')"
                     large-label
                 />
 
                 <TextInput
-                    ref="support_title_2"
-                    v-model="internalForm.support_title_2"
-                    name="support_title_2"
-                    :label="trans('institute.tool.attributes.support_title_2')"
-                    :error="form.errors.support_title_2"
+                    ref="privacy_evaluation_url"
+                    v-model="internalForm.privacy_evaluation_url"
+                    name="privacy_evaluation_url"
+                    :label="trans('institute.tool.attributes.privacy_evaluation_url')"
+                    :error="form.errors.privacy_evaluation_url"
+                    :tool-tip="trans('institute.tool.tooltip.privacy_evaluation_url')"
                     large-label
                 />
             </FormColumn>
 
             <FormColumn>
                 <TextInput
-                    ref="support_email_1"
-                    v-model="internalForm.support_email_1"
-                    name="support_email_1"
-                    :label="trans('institute.tool.attributes.support_email_1')"
-                    :error="form.errors.support_email_1"
+                    ref="security_evaluation_url"
+                    v-model="internalForm.security_evaluation_url"
+                    name="security_evaluation_url"
+                    :label="trans('institute.tool.attributes.security_evaluation_url')"
+                    :error="form.errors.security_evaluation_url"
+                    :tool-tip="trans('institute.tool.tooltip.security_evaluation_url')"
                     large-label
                 />
 
-                <TextInput
-                    ref="support_email_2"
-                    v-model="internalForm.support_email_2"
-                    name="support_email_2"
-                    :label="trans('institute.tool.attributes.support_email_2')"
-                    :error="form.errors.support_email_2"
+                <SelectInput
+                    ref="data_classification"
+                    v-model="internalForm.data_classification"
+                    class="w-full flex-shrink-1 | text-black"
+                    :label="trans('institute.tool.attributes.data_classification')"
+                    :options="selectFromArray(dataClassifications)"
+                    :error="internalForm.errors.data_classification"
+                    :tool-tip="trans('institute.tool.tooltip.data_classification')"
+                />
+            </FormColumn>
+
+            <FormColumn first>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'privacy_and_security')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_en`"
+                    v-model="field.value_en"
+                    :name="`custom_field_${field.id}_en`"
+                    :label="translatedCustomFieldTitle(field, 'en')"
+                    :error="form.errors.custom_fields"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'privacy_and_security')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_nl`"
+                    v-model="field.value_nl"
+                    :name="`custom_field_${field.id}_nl`"
+                    :label="translatedCustomFieldTitle(field, 'nl')"
+                    :error="form.errors.custom_fields"
                     large-label
                 />
             </FormColumn>
         </FormGroup>
 
-        <FormGroup>
-            <FormColumn first class="mt-16 sm:mt-0">
+        <FormGroup
+            :title="trans('page.information-manager.tool.form.headings.support')"
+            gray-background
+        >
+            <FormColumn first>
                 <TextInput
-                    ref="manual_title_1"
-                    v-model="internalForm.manual_title_1"
-                    name="manual_title_1"
-                    :label="trans('institute.tool.attributes.manual_title_1')"
-                    :error="form.errors.manual_title_1"
+                    ref="how_to_login_en"
+                    v-model="internalForm.how_to_login_en"
+                    name="how_to_login_en"
+                    :label="trans('institute.tool.attributes.how_to_login_en')"
+                    :error="form.errors.how_to_login_en"
+                    :tool-tip="trans('institute.tool.tooltip.how_to_login_en')"
                     large-label
                 />
 
                 <TextInput
-                    ref="manual_title_2"
-                    v-model="internalForm.manual_title_2"
-                    name="manual_title_2"
-                    :label="trans('institute.tool.attributes.manual_title_2')"
-                    :error="form.errors.manual_title_2"
+                    ref="how_to_login_nl"
+                    v-model="internalForm.how_to_login_nl"
+                    name="how_to_login_nl"
+                    :label="trans('institute.tool.attributes.how_to_login_nl')"
+                    :error="form.errors.how_to_login_nl"
+                    :tool-tip="trans('institute.tool.tooltip.how_to_login_nl')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="availability_en"
+                    v-model="internalForm.availability_en"
+                    name="availability_en"
+                    :label="trans('institute.tool.attributes.availability_en')"
+                    :error="form.errors.availability_en"
+                    :tool-tip="trans('institute.tool.tooltip.availability_en')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="availability_nl"
+                    v-model="internalForm.availability_nl"
+                    name="availability_nl"
+                    :label="trans('institute.tool.attributes.availability_nl')"
+                    :error="form.errors.availability_nl"
+                    :tool-tip="trans('institute.tool.tooltip.availability_nl')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="licensing_en"
+                    v-model="internalForm.licensing_en"
+                    name="licensing_en"
+                    :label="trans('institute.tool.attributes.licensing_en')"
+                    :error="form.errors.licensing_en"
+                    :tool-tip="trans('institute.tool.tooltip.licensing_en')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="licensing_nl"
+                    v-model="internalForm.licensing_nl"
+                    name="licensing_nl"
+                    :label="trans('institute.tool.attributes.licensing_nl')"
+                    :error="form.errors.licensing_nl"
+                    :tool-tip="trans('institute.tool.tooltip.licensing_nl')"
+                    large-label
+                />
+
+                <RichText
+                    ref="request_access_en"
+                    v-model="internalForm.request_access_en"
+                    name="request_access_en"
+                    :label="trans('institute.tool.attributes.request_access_en')"
+                    :error="form.errors.request_access_en"
+                    :tool-tip="trans('institute.tool.tooltip.request_access_en')"
+                    large-label
+                />
+
+                <RichText
+                    ref="request_access_nl"
+                    v-model="internalForm.request_access_nl"
+                    name="request_access_nl"
+                    :label="trans('institute.tool.attributes.request_access_nl')"
+                    :error="form.errors.request_access_nl"
+                    :tool-tip="trans('institute.tool.tooltip.request_access_nl')"
                     large-label
                 />
             </FormColumn>
 
             <FormColumn>
-                <TextInput
-                    ref="manual_url_1"
-                    v-model="internalForm.manual_url_1"
-                    name="manual_url_1"
-                    :label="trans('institute.tool.attributes.manual_url_1')"
-                    :error="form.errors.manual_url_1"
+                <RichText
+                    ref="instructions_en"
+                    v-model="internalForm.instructions_en"
+                    :label="trans('institute.tool.attributes.instructions_en')"
+                    :error="form.errors.instructions_en"
+                    :tool-tip="trans('institute.tool.tooltip.instructions_en')"
+                    large-label
+                />
+
+                <RichText
+                    ref="instructions_nl"
+                    v-model="internalForm.instructions_nl"
+                    :label="trans('institute.tool.attributes.instructions_nl')"
+                    :error="form.errors.instructions_nl"
+                    :tool-tip="trans('institute.tool.tooltip.instructions_nl')"
                     large-label
                 />
 
                 <TextInput
-                    ref="manual_url_2"
-                    v-model="internalForm.manual_url_2"
-                    name="manual_url_2"
-                    :label="trans('institute.tool.attributes.manual_url_2')"
-                    :error="form.errors.manual_url_2"
+                    ref="instructions_manual_1_url"
+                    v-model="internalForm.instructions_manual_1_url"
+                    name="instructions_manual_1_url"
+                    :label="trans('institute.tool.attributes.instructions_manual_1_url')"
+                    :error="form.errors.instructions_manual_1_url"
+                    :tool-tip="trans('institute.tool.tooltip.instructions_manual_1_url')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="instructions_manual_2_url"
+                    v-model="internalForm.instructions_manual_2_url"
+                    name="instructions_manual_2_url"
+                    :label="trans('institute.tool.attributes.instructions_manual_2_url')"
+                    :error="form.errors.instructions_manual_2_url"
+                    :tool-tip="trans('institute.tool.tooltip.instructions_manual_2_url')"
+                    large-label
+                />
+
+                <TextInput
+                    ref="instructions_manual_3_url"
+                    v-model="internalForm.instructions_manual_3_url"
+                    name="instructions_manual_3_url"
+                    :label="trans('institute.tool.attributes.instructions_manual_3_url')"
+                    :error="form.errors.instructions_manual_3_url"
+                    :tool-tip="trans('institute.tool.tooltip.instructions_manual_3_url')"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn first>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'support')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_en`"
+                    v-model="field.value_en"
+                    :name="`custom_field_${field.id}_en`"
+                    :label="translatedCustomFieldTitle(field, 'en')"
+                    :error="form.errors.custom_fields"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'support')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_nl`"
+                    v-model="field.value_nl"
+                    :name="`custom_field_${field.id}_nl`"
+                    :label="translatedCustomFieldTitle(field, 'nl')"
+                    :error="form.errors.custom_fields"
                     large-label
                 />
             </FormColumn>
         </FormGroup>
 
-        <FormGroup>
-            <FormColumn first class="mt-16 sm:mt-0">
-                <TextInput
-                    ref="video_title_1"
-                    v-model="internalForm.video_title_1"
-                    name="video_title_1"
-                    :label="trans('institute.tool.attributes.video_title_1')"
-                    :error="form.errors.video_title_1"
+        <FormGroup :title="trans('page.information-manager.tool.form.headings.education')">
+            <FormColumn first>
+                <RichText
+                    ref="faq_en"
+                    v-model="internalForm.faq_en"
+                    :label="trans('institute.tool.attributes.faq_en')"
+                    :error="form.errors.faq_en"
+                    :tool-tip="trans('institute.tool.tooltip.faq_en')"
                     large-label
                 />
 
-                <TextInput
-                    ref="video_title_2"
-                    v-model="internalForm.video_title_2"
-                    name="video_title_2"
-                    :label="trans('institute.tool.attributes.video_title_2')"
-                    :error="form.errors.video_title_2"
+                <RichText
+                    ref="faq_nl"
+                    v-model="internalForm.faq_nl"
+                    :label="trans('institute.tool.attributes.faq_nl')"
+                    :error="form.errors.faq_nl"
+                    :tool-tip="trans('institute.tool.tooltip.faq_nl')"
+                    large-label
+                />
+
+                <RichText
+                    ref="examples_of_usage_en"
+                    v-model="internalForm.examples_of_usage_en"
+                    :label="trans('institute.tool.attributes.examples_of_usage_en')"
+                    :error="form.errors.examples_of_usage_en"
+                    :tool-tip="trans('institute.tool.tooltip.examples_of_usage_en')"
+                    large-label
+                />
+
+                <RichText
+                    ref="examples_of_usage_nl"
+                    v-model="internalForm.examples_of_usage_nl"
+                    :label="trans('institute.tool.attributes.examples_of_usage_nl')"
+                    :error="form.errors.examples_of_usage_nl"
+                    :tool-tip="trans('institute.tool.tooltip.examples_of_usage_nl')"
                     large-label
                 />
             </FormColumn>
 
             <FormColumn>
                 <TextInput
-                    ref="video_url_1"
-                    v-model="internalForm.video_url_1"
-                    name="video_url_1"
-                    :label="trans('institute.tool.attributes.video_url_1')"
-                    :error="form.errors.video_url_1"
+                    ref="additional_info_heading_en"
+                    v-model="internalForm.additional_info_heading_en"
+                    name="additional_info_heading_en"
+                    :label="trans('institute.tool.attributes.additional_info_heading_en')"
+                    :error="form.errors.additional_info_heading_en"
+                    :tool-tip="trans('institute.tool.tooltip.additional_info_heading_en')"
                     large-label
                 />
 
                 <TextInput
-                    ref="video_url_2"
-                    v-model="internalForm.video_url_2"
-                    name="video_url_2"
-                    :label="trans('institute.tool.attributes.video_url_2')"
-                    :error="form.errors.video_url_2"
+                    ref="additional_info_heading_nl"
+                    v-model="internalForm.additional_info_heading_nl"
+                    name="additional_info_heading_nl"
+                    :label="trans('institute.tool.attributes.additional_info_heading_nl')"
+                    :error="form.errors.additional_info_heading_nl"
+                    :tool-tip="trans('institute.tool.tooltip.additional_info_heading_nl')"
+                    large-label
+                />
+
+                <RichText
+                    ref="additional_info_text_en"
+                    v-model="internalForm.additional_info_text_en"
+                    :label="trans('institute.tool.attributes.additional_info_text_en')"
+                    :error="form.errors.additional_info_text_en"
+                    :tool-tip="trans('institute.tool.tooltip.additional_info_text_en')"
+                    large-label
+                />
+
+                <RichText
+                    ref="additional_info_text_nl"
+                    v-model="internalForm.additional_info_text_nl"
+                    :label="trans('institute.tool.attributes.additional_info_text_nl')"
+                    :error="form.errors.additional_info_text_nl"
+                    :tool-tip="trans('institute.tool.tooltip.additional_info_text_nl')"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn first>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'education')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_en`"
+                    v-model="field.value_en"
+                    :name="`custom_field_${field.id}_en`"
+                    :label="translatedCustomFieldTitle(field, 'en')"
+                    :error="form.errors.custom_fields"
+                    large-label
+                />
+            </FormColumn>
+
+            <FormColumn>
+                <RichText
+                    v-for="field in filterCustomFields(internalForm.custom_fields, 'education')"
+                    :key="field.id"
+                    :ref="`custom_field_${field.id}_nl`"
+                    v-model="field.value_nl"
+                    :name="`custom_field_${field.id}_nl`"
+                    :label="translatedCustomFieldTitle(field, 'nl')"
+                    :error="form.errors.custom_fields"
                     large-label
                 />
             </FormColumn>
@@ -242,46 +542,79 @@ import formMixin from '@/mixins/form';
 import FormGroup from '@/components/FormGroup';
 import FormColumn from '@/components/FormColumn';
 import TextInput from '@/components/form/TextInput';
-import FileInput from '@/components/form/FileInput';
-import TextareaInput from '@/components/form/TextareaInput';
-import CheckGroupInput from '@/components/form/CheckGroupInput';
 import RadioInputToolStatus from '@/components/form/RadioInputToolStatus';
-import Btn from '@/components/Btn';
+import RichText from '@/components/form/RichText';
 
 import { selectFromArray } from '@/helpers/input';
+import ToolTip from '@/components/ToolTip.vue';
+import SelectInput from '@/components/form/SelectInput.vue';
+import TagInput from '@/components/form/TagInput.vue';
+import { filterCustomFields } from '@/helpers/filter-custom-fields';
 
 export default {
     components: {
+        TagInput,
+        SelectInput,
+        ToolTip,
         FormGroup,
         FormColumn,
-        CheckGroupInput,
         RadioInputToolStatus,
         TextInput,
-        FileInput,
-        TextareaInput,
-        Btn,
+        RichText,
     },
     mixins: [formMixin],
     props: {
-        categories: {
-            type: Object,
+        alternativeTools: {
+            type: [Object, Array],
             required: true,
         },
-        institute: {
-            type: Object,
+        prohibitedAlternativeTools: {
+            type: [Object, Array],
+            default: null,
+        },
+        categories: {
+            type: [Object, Array],
+            required: true,
+        },
+        dataClassifications: {
+            type: [Object, Array],
             required: true,
         },
         statusOptions: {
             type: Object,
             required: true,
         },
-        changeToProhibitedUrl: {
-            type: String,
-            required: true,
+    },
+    computed: {
+        /**
+         * @returns {string}
+         */
+        markedAsFitTooltip() {
+            return trans('institute.tool.tooltip.marked_as_fit');
+        },
+        /**
+         * @returns {boolean}
+         */
+        disallowed() {
+            // eslint-disable-next-line vue/no-undef-properties
+            return this.form.status === 'disallowed';
         },
     },
     methods: {
         selectFromArray,
+        filterCustomFields,
+
+        /**
+         * @param {object} field
+         * @param {string} locale
+         *
+         * @returns {string}
+         */
+        translatedCustomFieldTitle(field, locale) {
+            const title = field[`title_${locale}`] || field.title_en;
+
+            return `${title} (${locale.toUpperCase()})`;
+        },
     },
 };
 </script>

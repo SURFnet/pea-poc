@@ -12,4 +12,12 @@ class StoreRequest extends BaseRequest
     {
         return $this->user()->can('create', Tool::class);
     }
+
+    public function rules(): array
+    {
+        return [
+            ...parent::rules(),
+            'logo_filename' => ['required', 'image', 'max:' . config('validation.tool.image.max')],
+        ];
+    }
 }

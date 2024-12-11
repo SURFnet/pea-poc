@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'theme' => env('IGNITION_THEME', 'light'),
+    'theme' => env('IGNITION_THEME', 'dark'),
 
     /*
     |--------------------------------------------------------------------------
@@ -69,9 +69,7 @@ return [
     |
     */
 
-    'ignored_solution_providers' => [
-        \Facade\Ignition\SolutionProviders\MissingPackageSolutionProvider::class,
-    ],
+    'ignored_solution_providers' => [],
 
     /*
     |--------------------------------------------------------------------------
@@ -84,7 +82,7 @@ return [
     |
     */
 
-    'enable_runnable_solutions' => env('IGNITION_ENABLE_RUNNABLE_SOLUTIONS', null),
+    'enable_runnable_solutions' => env('IGNITION_ENABLE_RUNNABLE_SOLUTIONS', env('APP_DEBUG', false)),
 
     /*
     |--------------------------------------------------------------------------
@@ -109,7 +107,7 @@ return [
     |
     */
 
-    'remote_sites_path' => env('IGNITION_REMOTE_SITES_PATH', ''),
+    'remote_sites_path' => env('IGNITION_REMOTE_SITES_PATH', base_path()),
     'local_sites_path'  => env('IGNITION_LOCAL_SITES_PATH', ''),
 
     /*

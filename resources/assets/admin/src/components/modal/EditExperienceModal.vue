@@ -1,27 +1,47 @@
 <template>
-    <BaseModal :value="open" @close="close">
+    <BaseModal
+        :value="open"
+        @close="close"
+    >
         <template #title>
-            <h3 class="text-xl font-medium text-gray-900 | mb-4" v-text="trans('modal.edit_experience.title')" />
+            <h3
+                class="text-xl font-medium text-gray-900 | mb-4"
+                v-text="trans('modal.edit_experience.title')"
+            />
         </template>
 
-        <form class="space-y-6" @submit.prevent="submit">
+        <form
+            class="space-y-6"
+            @submit.prevent="submit"
+        >
             <ExperienceForm :form.sync="form" />
 
-            <FormFooter align="end" class="mt-6">
+            <FormFooter
+                align="end"
+                class="mt-6"
+            >
                 <Btn
                     type="button"
                     variant="default"
                     @click="close"
-                    v-text="trans('modal.edit_experience.actions.cancel')"
-                />
+                >
+                    {{ trans('modal.edit_experience.actions.cancel') }}
+                </Btn>
 
-                <Btn type="submit" variant="primary" v-text="trans('modal.edit_experience.actions.update')" />
+                <Btn
+                    type="submit"
+                    variant="primary"
+                >
+                    {{ trans('modal.edit_experience.actions.update') }}
+                </Btn>
             </FormFooter>
         </form>
     </BaseModal>
 </template>
 
 <script>
+import { useForm } from '@inertiajs/vue2';
+
 import BaseModal from '@/components/BaseModal';
 import FormFooter from '@/components/FormFooter';
 import Btn from '@/components/Btn';
@@ -52,8 +72,7 @@ export default {
      */
     data() {
         return {
-            form: this.$inertia.form({
-                rating: this.experience.rating,
+            form: useForm({
                 title: this.experience.title,
                 message: this.experience.message,
             }),
@@ -62,9 +81,13 @@ export default {
     methods: {
         /**
          * Responsible for closing.
+         *
+         * @param {boolean} shouldReset
          */
-        close() {
-            this.form.reset();
+        close(shouldReset = true) {
+            if (shouldReset) {
+                this.form.reset();
+            }
             this.$emit('closed');
         },
         /**
@@ -74,7 +97,7 @@ export default {
             this.form.put(route('teacher.experience.update', { experience: this.experience }), {
                 preserveScroll: true,
                 onSuccess: () => {
-                    this.close();
+                    this.close(false);
                 },
             });
         },

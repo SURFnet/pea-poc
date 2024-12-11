@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Middleware;
 
-use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Config;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class HandleInertiaRequestsTest extends TestCase
@@ -77,7 +76,7 @@ class HandleInertiaRequestsTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('home/Index')
-                    ->where('currentUser', new UserResource($this->admin))
+                    ->where('currentUser.id', $this->admin->id)
             );
     }
 

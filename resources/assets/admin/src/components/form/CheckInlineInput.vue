@@ -5,32 +5,44 @@
                 :id="id"
                 ref="input"
                 v-model="localValue"
+                :disabled="disabled"
                 type="checkbox"
                 v-bind="$attrs"
-                class="h-4 w-4 | rounded | text-blue-600 border-gray-300 | focus:ring-blue-400"
+                class="h-4 w-4 | rounded"
                 :class="inputClass"
                 @change="updateValue"
             />
         </div>
+
         <div class="ml-3 text-sm">
             <InputLabel
                 v-if="label"
                 :for="id"
                 :required="required"
                 class="inline-flex items-center"
+                :class="labelClass"
                 :large-label="largeLabel"
             >
                 {{ label }}
             </InputLabel>
 
-            <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+            <InvalidFeedback
+                v-if="error"
+                :error="error"
+                class="mt-2"
+            />
 
-            <HelpText :text="text" class="mt-2" />
+            <HelpText
+                :text="text"
+                class="mt-2"
+            />
         </div>
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -52,8 +64,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `check-input-${this._uid}`;
+                return `check-input-${uniqueId()}`;
             },
         },
         value: {
@@ -84,6 +95,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        disabled: {
+            type: Boolean,
+            default: null,
+        },
     },
     /**
      * Holds the data.
@@ -102,9 +117,31 @@ export default {
          * @returns {string}
          */
         inputClass() {
-            return {
-                'border-red-300 text-red-900 focus:outline-none focus:ring-red-500 focus:border-red-500': this.error,
-            };
+            if (this.error) {
+                return 'border-red-300 text-red-900 focus:outline-none focus:ring-red-500 focus:border-red-500';
+            }
+
+            if (this.disabled) {
+                return 'disabled:border-stone-600 disabled:bg-zinc-800 disabled:hover:bg-zinc-800 disabled:hover:border-stone-600 invert cursor-not-allowed';
+            }
+
+            return 'border-gray-300 focus:ring-blue-400';
+        },
+        /**
+         * Determines the label class based on the current state.
+         *
+         * @returns {string}
+         */
+        labelClass() {
+            if (this.error) {
+                return 'text-red-900';
+            }
+
+            if (this.disabled) {
+                return 'text-slate-500';
+            }
+
+            return 'text-gray-900';
         },
     },
     watch: {
@@ -118,13 +155,6 @@ export default {
         },
     },
     methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
-        },
-
         /**
          * Update with the the chosen option.
          *

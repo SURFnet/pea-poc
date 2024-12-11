@@ -2,33 +2,35 @@
     <th v-if="options">
         <select
             v-model="localValue"
-            class="w-full block border-gray-300 | sm:text-sm | focus:ring-primary-light focus:border-primary"
+            class="w-full block border-gray-300 | sm:text-sm font-normal | focus:ring-primary-light focus:border-primary"
         >
             <option />
-            <option v-for="option in options" :key="option.value" :value="option.value" v-text="option.label" />
+
+            <option
+                v-for="option in options"
+                :key="option.value"
+                :value="option.value"
+                v-text="option.label"
+            />
         </select>
     </th>
     <th v-else>
         <input
             v-model="localValue"
-            class="w-full block border-gray-300 | sm:text-sm | focus:ring-primary-light focus:border-primary"
+            class="w-full block border-gray-300 | sm:text-sm font-normal | focus:ring-primary-light focus:border-primary"
             type="text"
         />
     </th>
 </template>
 
 <script>
-import { debounce } from 'lodash';
+import debounce from 'lodash/debounce';
 
 export default {
     props: {
         value: {
             type: String,
             default: null,
-        },
-        column: {
-            type: String,
-            required: true,
         },
         options: {
             type: Array,

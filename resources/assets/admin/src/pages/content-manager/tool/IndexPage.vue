@@ -5,8 +5,9 @@
                 variant="primary"
                 inertia
                 :href="route('content-manager.tool.create')"
-                v-text="trans('action.create')"
-            />
+            >
+                {{ trans('action.create') }}
+            </Btn>
         </PageHeader>
 
         <DataTable
@@ -15,29 +16,74 @@
             :empty-text="trans('message.no-data')"
             :filter-url="route('content-manager.tool.index')"
             filter-data-key="tools"
+            scrollable
         >
             <template #name="{ item }">
-                <div class="flex flew-row items-center">
-                    <EntityIcon size="md" :text="item.name" :image="item.image_url" class="mr-4" />
-                    <span class="font-semibold" v-text="item.name" />
+                <div class="flex flex-row items-center gap-4">
+                    <EntityIcon
+                        size="md"
+                        :text="item.name"
+                        :image="item.logo_url"
+                    />
+
+                    <span
+                        class="font-semibold"
+                        v-text="item.name"
+                    />
                 </div>
             </template>
-            <template #status_display="{ item }">
-                <StatusPill :variant="pillVariant(item.status)" v-text="item.status_display" />
-            </template>
+
             <template #features="{ item }">
                 <ExpandableTagList :item-list="item.features" />
             </template>
+
+            <template #status_display="{ item }">
+                <StatusPill :variant="pillVariant(item.status)">
+                    {{ item.status_display }}
+                </StatusPill>
+            </template>
+
+            <template #has_concept="{ item }">
+                {{ item.has_concept ? trans('tool.has_concept.yes') : trans('tool.has_concept.no') }}
+            </template>
+
             <template #action="{ item }">
-                <div class="text-right">
-                    <Btn
-                        v-if="item.permissions.update"
-                        inertia
+                <div
+                    v-if="item.permissions.update"
+                    class="text-right"
+                >
+                    <BaseDropdown
                         variant="no-outline"
-                        :href="route('content-manager.tool.edit', item)"
+                        position="right"
+                        absolute
                     >
-                        <FontAwesomeIcon icon="pencil-alt" class="text-lg text-gray-500 hover:text-gray-700" />
-                    </Btn>
+                        <div class="flex flex-col">
+                            <DropdownItem
+                                :href="route('content-manager.tool.edit', item)"
+                                as="button"
+                            >
+                                {{ editButtonCaption(item) }}
+                            </DropdownItem>
+
+                            <template v-if="item.has_concept">
+                                <DropdownItem
+                                    :href="route('content-manager.tool.publish-concept', item)"
+                                    method="put"
+                                    as="button"
+                                >
+                                    {{ trans('action.publish_concept') }}
+                                </DropdownItem>
+
+                                <DropdownItem
+                                    :href="route('content-manager.tool.discard-concept', item)"
+                                    method="put"
+                                    as="button"
+                                >
+                                    {{ trans('action.discard_concept') }}
+                                </DropdownItem>
+                            </template>
+                        </div>
+                    </BaseDropdown>
                 </div>
             </template>
         </DataTable>
@@ -54,7 +100,9 @@ import Layout from '@/layouts/DefaultLayout';
 import PageContainer from '@/components/page/PageContainer';
 import PageHeader from '@/components/page/PageHeader';
 
+import BaseDropdown from '@/components/BaseDropdown';
 import DataTable from '@/components/DataTable';
+import DropdownItem from '@/components/DropdownItem';
 import InertiaPagination from '@/components/InertiaPagination';
 import EntityIcon from '@/components/EntityIcon';
 import Btn from '@/components/Btn';
@@ -65,7 +113,9 @@ export default {
     components: {
         PageContainer,
         PageHeader,
+        BaseDropdown,
         DataTable,
+        DropdownItem,
         InertiaPagination,
         EntityIcon,
         Btn,
@@ -77,6 +127,10 @@ export default {
         tools: {
             type: Object,
             default: null,
+        },
+        features: {
+            type: [Object, Array],
+            required: true,
         },
         statusOptions: {
             type: Object,
@@ -96,6 +150,14 @@ export default {
                     value: trans('tool.attributes.name'),
                     filter: true,
                     filterKey: 'name',
+                    wrap: true,
+                },
+                {
+                    key: 'features',
+                    value: trans('tool.attributes.features'),
+                    filter: true,
+                    filterKey: 'feature',
+                    filterOptions: selectFromArray(this.features),
                 },
                 {
                     key: 'status_display',
@@ -105,10 +167,9 @@ export default {
                     filterOptions: selectFromArray(this.statusOptions),
                 },
                 {
-                    key: 'features',
-                    value: trans('feature.plural'),
-                    filter: true,
-                    filterKey: 'feature',
+                    key: 'has_concept',
+                    value: trans('tool.attributes.has_concept'),
+                    filter: false,
                 },
                 {
                     key: 'action',
@@ -132,6 +193,20 @@ export default {
             }
 
             return 'success';
+        },
+
+        /**
+         * Determine caption of Edit Button
+         *
+         * @param {object} item
+         * @returns {string}
+         */
+        editButtonCaption(item) {
+            if (item.has_concept) {
+                return trans('action.edit_concept');
+            }
+
+            return trans('action.edit');
         },
     },
     /**

@@ -7,7 +7,7 @@ namespace Tests\Feature\InformationManager\Tool;
 use App\Models\Tool;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class CreateTest extends TestCase

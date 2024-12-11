@@ -8,11 +8,11 @@ return [
     'locales'              => [],
     'cache-duration'       => 30,
     'register-breadcrumbs' => false,
-    'editable-languages'   => false,
+    'editable-languages'   => true,
 
     // The key is the namespace and the value is the actual folder
     'language-folders' => [
-        '*'             => resource_path('lang'),
+        '*'             => base_path('lang'),
         'Way2Translate' => base_path('modules/Way2Translate/resources/lang'),
     ],
 

@@ -15,7 +15,10 @@
             @before-leave="backdropLeaving = true"
             @after-leave="backdropLeaving = false"
         >
-            <div class="fixed inset-0 transition-opacity" @click="close">
+            <div
+                class="fixed inset-0 transition-opacity"
+                @click="close"
+            >
                 <div class="bg-black bg-opacity-50 | absolute inset-0" />
             </div>
         </transition>
@@ -32,15 +35,18 @@
             @before-leave="cardLeaving = true"
             @after-leave="cardLeaving = false"
         >
-            <div class="transform transition-all" :class="modalClasses">
+            <div
+                class="transform transition-all"
+                :class="modalClasses"
+            >
                 <div
-                    class="relative | max-h-almost overflow-y-auto | bg-white rounded-lg shadow-xl | px-4 pt-5 pb-4 sm:p-6"
+                    class="max-h-almost overflow-y-auto | bg-white rounded-lg shadow-xl | px-4 pt-5 pb-4 sm:p-6"
                     :class="modalStyle"
                 >
-                    <div>
-                        <CloseButton class="absolute top-4 right-4" @close="close" />
-
+                    <div class="flex flex-row gap-2 items-start justify-between">
                         <slot name="title" />
+
+                        <CloseButton @close="close" />
                     </div>
 
                     <slot />
@@ -104,7 +110,6 @@ export default {
         leaving() {
             return this.backdropLeaving || this.cardLeaving;
         },
-
         /**
          * Determines the classes relevant for the modal.
          *
@@ -156,7 +161,6 @@ export default {
                 this.$emit('input', false);
             }
         },
-
         /**
          * Emit a closed event when all transition are done and the modal is closed.
          *

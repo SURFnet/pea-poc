@@ -82,7 +82,7 @@ class Format
         return false;
     }
 
-    public static function stripTagsAndConvertNewlineToHtml(?string $string): string
+    public static function asSimpleHtml(?string $string): string
     {
         return is_null($string) ? '' : strip_tags(nl2br($string), ['<br>']);
     }

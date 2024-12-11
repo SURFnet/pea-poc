@@ -4,18 +4,15 @@ declare(strict_types=1);
 
 namespace App\Traits\Resources;
 
+use App\Helpers\File;
 use App\Models\Tool;
-use Illuminate\Support\Facades\Storage;
 
 trait WithImage
 {
-    private function getImageUrl(?string $image, bool $showPlaceholder = false): string | null
+    protected function getImageUrl(?string $image, bool $showPlaceholder = false): string | null
     {
         if ($image) {
-            /** @var \Illuminate\Filesystem\FilesystemAdapter */
-            $storage = Storage::disk(Tool::$disk);
-
-            return $storage->url($image);
+            return File::getPublicUrl(Tool::$disk, $image);
         }
 
         return $showPlaceholder ? asset('dist/admin/images/placeholder.png') : null;

@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Feature\ContentManager\Tool;
 
-use App\Models\Feature;
+use App\Enums\Tags\TagTypes;
+use App\Models\Tag;
 use App\Models\Tool;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class IndexTest extends TestCase
@@ -25,12 +26,8 @@ class IndexTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('content-manager/tool/Index')
-                    ->has(
-                        'tools.data.0',
-                        fn (Assert $page) => $page
-                            ->where('name', $tool->name)
-                            ->etc()
-                    )
+                    ->where('tools.data.0.id', $tool->id)
+                    ->where('tools.data.0.name', $tool->name)
             );
     }
 
@@ -100,39 +97,31 @@ class IndexTest extends TestCase
                 fn (Assert $page) => $page
                     ->component('content-manager/tool/Index')
                     ->has('tools.data', 1)
-                    ->has(
-                        'tools.data.0',
-                        fn (Assert $page) => $page
-                            ->where('name', $tool->name)
-                            ->etc()
-                    )
+                    ->where('tools.data.0.id', $tool->id)
             );
     }
 
     /** @test */
     public function tools_can_be_filtered_by_feature(): void
     {
-        $feature = Feature::factory()->create(['name' => 'awesome']);
+        Tool::factory()->create(['name' => 'irrelevant']);
+        $tool = Tool::factory()->create(['name' => 'matched']);
 
-        Tool::factory()->create();
+        $featureTag = Tag::factory()->create([
+            'type' => TagTypes::FEATURES,
+        ]);
 
-        $tool = Tool::factory()->create(['name' => 'feature-tool']);
-        $tool->features()->attach($feature);
+        $tool->syncTagsWithType([$featureTag], TagTypes::FEATURES);
 
         $this
             ->actingAs($this->admin)
-            ->get(route('content-manager.tool.index', ['filter' => ['feature' => 'awesome']]))
+            ->get(route('content-manager.tool.index', ['filter' => ['feature' => $featureTag->id]]))
 
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('content-manager/tool/Index')
                     ->has('tools.data', 1)
-                    ->has(
-                        'tools.data.0',
-                        fn (Assert $page) => $page
-                            ->where('name', $tool->name)
-                            ->etc()
-                    )
+                    ->where('tools.data.0.id', $tool->id)
             );
     }
 }

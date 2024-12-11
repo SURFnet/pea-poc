@@ -1,6 +1,15 @@
 <template>
-    <a :href="url" target="_blank" rel="noopener noreferrer" class="block | text-blue-500 hover:text-black">
-        <font-awesome-icon class="text-black | mr-2" icon="arrow-right" />
+    <a
+        :href="url"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="block | text-blue-500 hover:text-black"
+    >
+        <FontAwesomeIcon
+            class="text-black | mr-2"
+            icon="arrow-right"
+        />
+
         <span v-text="title" />
     </a>
 </template>

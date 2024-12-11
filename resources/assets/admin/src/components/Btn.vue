@@ -1,5 +1,13 @@
 <template>
-    <component :is="componentType" :href="getLocation" :class="buttonClasses" :disabled="disabled" @click="handleClick">
+    <component
+        :is="componentType"
+        :href="getLocation"
+        :class="buttonClasses"
+        :disabled="disabled"
+        :target="target"
+        :rel="relValue"
+        @click="handleClick"
+    >
         <slot />
     </component>
 </template>
@@ -47,6 +55,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        target: {
+            type: String,
+            default: null,
+        },
     },
     computed: {
         /**
@@ -65,7 +77,6 @@ export default {
 
             return 'button';
         },
-
         /**
          * Determines the location for the anchor.
          *
@@ -147,8 +158,13 @@ export default {
 
             return btnClasses.join(' | ');
         },
+        /**
+         * @returns {string}
+         */
+        relValue() {
+            return this.target === '_blank' ? 'noopener noreferrer' : null;
+        },
     },
-
     methods: {
         /**
          * Handles a click event on the component.

@@ -20,13 +20,16 @@
                             class="thumbnail-container | w-full h-64 lg:h-1/2 | bg-cover bg-center bg-no-repeat"
                             style="background-image: url('/dist/admin/images/about/pc.jpg')"
                         />
+
                         <div>
                             <h3 class="text-xl text-black font-bold mb-3">
                                 {{ trans('page.about.index.sections.how-to-use.title') }}
                             </h3>
+
                             <p class="mb-2">
                                 {{ trans('page.about.index.sections.how-to-use.text.0') }}
                             </p>
+
                             <p>{{ trans('page.about.index.sections.how-to-use.text.1') }}</p>
                         </div>
                     </div>
@@ -37,6 +40,7 @@
                         <h3 class="text-xl text-black font-bold mb-3">
                             {{ trans('page.about.index.sections.pea-support.title') }}
                         </h3>
+
                         <p>{{ trans('page.about.index.sections.pea-support.text') }}</p>
                     </div>
                 </section>
@@ -47,8 +51,10 @@
                             <h3 class="text-xl text-black font-bold mb-3">
                                 {{ trans('page.about.index.sections.about-edutools-project-and-surf-title.title') }}
                             </h3>
+
                             <p>{{ trans('page.about.index.sections.about-edutools-project-and-surf-title.text') }}</p>
                         </div>
+
                         <div
                             class="thumbnail-container | w-full h-64 lg:h-1/2 | bg-cover bg-center bg-no-repeat"
                             style="background-image: url('/dist/admin/images/about/aula.jpg')"

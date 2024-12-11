@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Tool;
 
+use App\Helpers\File;
 use App\Models\Tool;
 use Illuminate\Support\Facades\Storage;
 use Spatie\QueueableAction\QueueableAction;
@@ -23,9 +24,7 @@ class StoreImagesAction
                 Storage::disk(Tool::$disk)->delete($tool->$imageField);
             }
 
-            $tool->$imageField = basename(
-                $data[$imageField]->store(Tool::$disk)
-            );
+            $tool->$imageField = File::store($data[$imageField], Tool::$disk);
         }
 
         $tool->save();

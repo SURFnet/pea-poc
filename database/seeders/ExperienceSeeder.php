@@ -16,6 +16,8 @@ class ExperienceSeeder extends BaseSeeder
 
         Tool::each(function (Tool $tool) use ($allUsers): void {
             if (!rand(0, 4)) {
+                $this->advanceProgressBar();
+
                 return;
             }
 

@@ -1,4 +1,4 @@
-# PEA
+# PEA - Platform Educational Applications (Pilot Phase)
 
 ## Setting up the application
 
@@ -6,14 +6,18 @@
 
 - PHP 8.0
 - Composer 2
-- NVM with Node 14
+- NVM with Node 20
+- PNPM >=8.7.6 && <9
+    - Run `curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=8.15.8 sh -` to install pnpm
+        - Run `pnpm add -g pnpm@8` if you need to update to a newer version of pnpm 8 for some reason
 - MySQL 5.7
+- S3 (or compatible) storage
 
 ### Set up
 
 #### Production
 - Create a database
-- Copy the `.env.example` to `.env`
+- Copy the `.env.example` to `.env` and configure the variables
 - Install dependencies: `composer install --no-dev`
 - Set up a new key for the application: `artisan key:generate`
 - Properly fill in the `.env` file
@@ -26,7 +30,7 @@
 
 #### Development
 - Create a database
-- Copy the `.env.example` to `.env`
+- Copy the `.env.example` to `.env` and configure the variables
 - Install dependencies: `composer install`
 - Set up a new key for the application: `artisan key:generate`
 - Properly fill in the `.env` file
@@ -35,9 +39,18 @@
 - Export the translations for Javascript: `artisan w2w:export-translations`
 
 ## Storage
+Storage is assumed to run from a S3 service, or anything that's compatible with S3 (like Minio, Wasabisys, etc.).
+A public bucket is required from which images are served, and an Access Key + Secret should be entered into the .env file:
 
-If running in a Docker environment, always ensure that the symbolic links are created from Docker and not the host OS. 
-Otherwise the path will not be correct and files can not be found by nginx.
+```dotenv
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=
+AWS_BUCKET_PUBLIC=
+AWS_URL=
+AWS_ENDPOINT=
+AWS_USE_PATH_STYLE_ENDPOINT=true
+```
 
 ## SURFconext authentication
 To be able to login with SURFconext you need to configure valid oAuth credentials in your .env file:
@@ -68,4 +81,3 @@ Perform the following steps to login with SURFconext:
 * Choose the EduID provider
 * Log in with an existing EduID account, or [create your own free account](https://wiki.surfnet.nl/display/conextsupport/eduID+gasttoegang)
 * After the login, you are redirect back into the application and a user account is either created, or updated with the latest information from SURFconext
-

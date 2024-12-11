@@ -40,6 +40,7 @@
             "error",
             {
                 "devDependencies": [
+                    "**/stories/**",
                     "**/webpack.mix.js"
                 ]
             }
@@ -184,7 +185,41 @@
                 "ignores": []
             }
         ],
-        "vue/multi-word-component-names": "off"
+        "vue/multi-word-component-names": "off",
+        "vue/no-undef-properties": "error",
+        "vue/no-unused-properties": [
+            "error",
+            {
+                "groups": [
+                    "props",
+                    "data",
+                    "computed",
+                    "methods",
+                    "setup"
+                ],
+                "deepData": true
+            }
+        ],
+        "vue/padding-line-between-tags": [
+            "error",
+            [
+                { "blankLine": "always", "prev": "*", "next": "*" },
+                { "blankLine": "never", "prev": "li", "next": "li" },
+                { "blankLine": "never", "prev": "tr", "next": "tr" },
+                { "blankLine": "never", "prev": "td", "next": "td" },
+                { "blankLine": "never", "prev": "th", "next": "th" },
+
+                // SVG-related
+                { "blankLine": "never", "prev": "defs", "next": "*" },
+                { "blankLine": "never", "prev": "polygon", "next": "*" },
+                { "blankLine": "never", "prev": "g", "next": "*" },
+                { "blankLine": "never", "prev": "path", "next": "*" },
+                { "blankLine": "never", "prev": "polygon", "next": "*" },
+                { "blankLine": "never", "prev": "mask", "next": "*" },
+                { "blankLine": "never", "prev": "use", "next": "*" }
+            ]
+        ],
+        "vue/prefer-template": "warn"
     },
     "settings": {
         "import/resolver": {

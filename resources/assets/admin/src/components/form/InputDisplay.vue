@@ -1,12 +1,21 @@
 <template>
     <div class="space-y-2">
-        <label class="block | text-sm font-source-sans text-gray-900 font-medium" v-text="label" />
-        <p class="text-sm font-light text-gray-700" v-text="value" />
+        <InputLabel>
+            {{ label }}
+        </InputLabel>
+
+        <p
+            class="text-sm font-light text-gray-700"
+            v-text="value"
+        />
     </div>
 </template>
 
 <script>
+import InputLabel from '@/components/form/shared/InputLabel.vue';
+
 export default {
+    components: { InputLabel },
     props: {
         label: {
             type: String,

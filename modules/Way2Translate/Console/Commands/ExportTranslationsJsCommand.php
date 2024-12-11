@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace Modules\Way2Translate\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 use Modules\Way2Translate\Generators\JsGenerator;
 use Modules\Way2Translate\Models\Translation;
 
-class ExportTranslationsJsCommand extends Command
+class ExportTranslationsJsCommand extends Command implements Isolatable
 {
     /** @var string */
     protected $signature = 'w2w:export-translations-js';

@@ -6,8 +6,10 @@ require('dotenv').config(dotEnvConfig);
 
 const tailwindcss = require('tailwindcss');
 
-const themeRoot = '../../../public_html/dist/admin/';
+const themeRoot = '../../../public/dist/admin/';
 const SentryCliPlugin = require('@sentry/webpack-plugin');
+
+const config = require('./webpack.config');
 
 /**
  * Set the resource root and the public path.
@@ -19,6 +21,7 @@ mix.setPublicPath(themeRoot);
  * Copy the public images.
  */
 mix.copyDirectory('images', `${themeRoot}/images/`);
+mix.copyDirectory('fonts', `${themeRoot}/fonts/`);
 
 mix.js('src/main.js', 'js')
     .vue({ version: 2 })
@@ -46,10 +49,18 @@ if (process.env.RELEASE_ID) {
     webpackPlugins.push(
         new SentryCliPlugin({
             release: process.env.RELEASE_ID,
-            include: '../../../public_html/',
+            include: '../../../public/',
         })
     );
 }
+
+mix.webpackConfig({
+    plugins: webpackPlugins,
+    stats: {
+        children: true,
+    },
+    ...config,
+});
 
 if (mix.inProduction()) {
     mix.version();

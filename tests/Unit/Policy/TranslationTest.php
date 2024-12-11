@@ -10,15 +10,15 @@ use Tests\TestCase;
 class TranslationTest extends TestCase
 {
     /** @test */
-    public function can_not_be_managed_on_production(): void
+    public function can_be_managed_on_production(): void
     {
         $this->app['env'] = 'production';
 
-        $this->assertFalse($this->admin->can('viewAny', Translation::class));
-        $this->assertFalse($this->admin->can('create', Translation::class));
-        $this->assertFalse($this->admin->can('view', new Translation()));
-        $this->assertFalse($this->admin->can('update', new Translation()));
-        $this->assertFalse($this->admin->can('delete', new Translation()));
+        $this->assertTrue($this->admin->can('viewAny', Translation::class));
+        $this->assertTrue($this->admin->can('create', Translation::class));
+        $this->assertTrue($this->admin->can('view', new Translation()));
+        $this->assertTrue($this->admin->can('update', new Translation()));
+        $this->assertTrue($this->admin->can('delete', new Translation()));
     }
 
     /** @test */

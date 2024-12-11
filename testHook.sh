@@ -12,7 +12,7 @@ if [ -f ~/.nvm/nvm.sh ]; then
 fi
 
 echo "====== Running tests ======="
-nvm use 14
+nvm use 20
 
 for app in admin
 do
@@ -22,8 +22,8 @@ do
     if [ -f package.json ]; then
         find . -maxdepth 1 -name package.json | grep package > /dev/null 2>&1
         if [ $? == 0 ]; then
-            echo "= NPM ="
-            npm install --no-ansi --no-color
+            echo "= PNPM install ="
+            pnpm install --frozen-lockfile --no-color
             if [ $? != 0 ]; then
                 exit 1
             fi

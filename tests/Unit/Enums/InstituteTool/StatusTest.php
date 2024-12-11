@@ -58,7 +58,6 @@ class StatusTest extends BaseEnumTest
     public function privateValues(): array
     {
         return [
-            [Status::PROHIBITED],
             [Status::UNPUBLISHED],
             [Status::UNRATED],
         ];

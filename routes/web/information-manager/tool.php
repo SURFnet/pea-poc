@@ -14,13 +14,10 @@ Route::group(
         Route::get('add', [ToolController::class, 'create'])
             ->name('create');
 
-        Route::post('', [ToolController::class, 'store'])
-            ->name('store');
-
         Route::get('edit', [ToolController::class, 'edit'])
             ->name('edit');
 
-        Route::put('update', [ToolController::class, 'update'])
+        Route::put('update/{continue?}', [ToolController::class, 'update'])
             ->name('update');
 
         Route::put('publish', [ToolController::class, 'publish'])
@@ -28,6 +25,24 @@ Route::group(
 
         Route::put('unpublish', [ToolController::class, 'unpublish'])
             ->name('unpublish');
+
+        Route::put('publish-concept', [ToolController::class, 'publishConcept'])
+            ->name('publish-concept');
+
+        Route::put('discard-concept', [ToolController::class, 'discardConcept'])
+            ->name('discard-concept');
+
+        Route::get('log', [ToolController::class, 'log'])
+            ->name('log');
+
+        Route::post('cancel-edit', [ToolController::class, 'cancelEdit'])
+            ->name('cancel-edit');
+
+        Route::post('request-for-change', [ToolController::class, 'requestForChange'])
+            ->name('request-for-change');
+
+        Route::post('{continue?}', [ToolController::class, 'store'])
+            ->name('store');
     }
 );
 

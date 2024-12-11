@@ -17,7 +17,7 @@ class Translation extends Model
     /** @var string */
     protected $table = 'way2translate_translations';
 
-    /** @var array */
+    /** @var array<int, string> */
     protected $fillable = [
         'namespace',
         'locale',
@@ -26,12 +26,6 @@ class Translation extends Model
         'key',
         'value',
         'in_latest_import',
-    ];
-
-    /** @var array */
-    protected $dates = [
-        'created_at',
-        'updated_at',
     ];
 
     public function scopeForContext(Builder $query, string $locale, string $namespace, string $group): void

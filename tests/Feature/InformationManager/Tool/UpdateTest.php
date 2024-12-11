@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Tests\Feature\InformationManager\Tool;
 
+use App\Enums\InstituteTool\DataClassification;
 use App\Enums\InstituteTool\Status;
-use App\Models\Category;
 use App\Models\InstituteTool;
+use App\Models\PendingToolEdit;
 use App\Models\Tool;
+use App\Models\ToolLog;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class UpdateTest extends TestCase
 {
     /** @test */
-    public function can_be_done_without_additional_data(): void
+    public function can_be_done_with_minimal_data(): void
     {
         $tool = Tool::factory()->published()->create();
         $this->informationManager->institute->tools()->attach($tool);
 
         $this
             ->actingAs($this->informationManager)
-            ->put(route('information-manager.tool.update', $tool))
+            ->put(route('information-manager.tool.update', $tool), $this->validRequestData())
 
             ->assertSessionDoesntHaveErrors()
             ->assertRedirect(route('information-manager.tool.index'));
@@ -33,38 +33,74 @@ class UpdateTest extends TestCase
     }
 
     /** @test */
+    public function can_save_and_continue_editing(): void
+    {
+        $tool = Tool::factory()->published()->create();
+        $this->informationManager->institute->tools()->attach($tool);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->put(
+                route('information-manager.tool.update', ['tool' => $tool, 'continue' => true]),
+                $this->validRequestData()
+            )
+
+            ->assertSessionDoesntHaveErrors()
+            ->assertRedirect(route('information-manager.tool.edit', $tool));
+
+        $this->assertTrue($this->informationManager->institute->tools()->find($tool)->exists());
+    }
+
+    /** @test */
     public function all_data_is_correctly_saved_in_the_pivot_table(): void
     {
         $institute = $this->informationManager->institute;
-        $oldCategories = Category::factory()->count(2)->for($institute)->create();
 
         $tool = Tool::factory()->published()->create();
-        $institute->tools()->attach($tool, [
-            'categories'    => $oldCategories->pluck('id')->sort()->toArray(),
-            'description_1' => 'Old Description 1',
-        ]);
 
-        $newCategories = Category::factory()->count(2)->for($institute)->create();
+        $institute->tools()->attach($tool);
 
         $data = [
-            'categories'              => $newCategories->pluck('id')->sort()->toArray(),
-            'description_1'           => ':: description_1 ::',
-            'description_2'           => ':: description_2 ::',
-            'extra_information_title' => ':: extra_information_title ::',
-            'extra_information'       => ':: extra_information ::',
-            'support_title_1'         => ':: support_title_1 ::',
-            'support_email_1'         => 'assist@paqt.com',
-            'support_title_2'         => ':: support_title_2 ::',
-            'support_email_2'         => 'info@paqt.com',
-            'manual_title_1'          => ':: manual_title_1 ::',
-            'manual_url_1'            => 'https://manuals.com/summary',
-            'manual_title_2'          => ':: manual_title_2 ::',
-            'manual_url_2'            => 'https://manuals.com/extensive',
-            'video_title_1'           => ':: video_title_1 ::',
-            'video_url_1'             => 'https://youtube.com/12345678',
-            'video_title_2'           => ':: video_title_2 ::',
-            'video_url_2'             => 'https://youtube.com/87654321',
-            'status'                  => Status::SUPPORTED,
+            ...$this->validRequestData(),
+
+            'status'        => Status::ALLOWED,
+            'conditions_en' => '::conditions_en::',
+            'conditions_nl' => '::conditions_en::',
+
+            'links_with_other_tools_en' => '::links_with_other_tools_en::',
+            'links_with_other_tools_nl' => '::links_with_other_tools_nl::',
+            'sla_url'                   => 'https://sla-url.nl',
+
+            'privacy_contact'         => '::privacy_contact::',
+            'privacy_evaluation_url'  => 'https://privacy-evaluation-url.nl',
+            'security_evaluation_url' => 'https://security-evaluation-url.nl',
+            'data_classification'     => DataClassification::INTERNAL,
+
+            'how_to_login_en'           => '::how_to_login_en::',
+            'how_to_login_nl'           => '::how_to_login_nl::',
+            'availability_en'           => '::availability_en::',
+            'availability_nl'           => '::availability_nl::',
+            'licensing_en'              => '::licensing_en::',
+            'licensing_nl'              => '::licensing_nl::',
+            'request_access_en'         => '::request_access_en::',
+            'request_access_nl'         => '::request_access_nl::',
+            'instructions_en'           => '::instructions_en::',
+            'instructions_nl'           => '::instructions_nl::',
+            'instructions_manual_1_url' => 'https://instructions-manual-1-url.nl',
+            'instructions_manual_2_url' => 'https://instructions-manual-2-url.nl',
+            'instructions_manual_3_url' => 'https://instructions-manual-3-url.nl',
+
+            'faq_en'                     => '::faq_en::',
+            'faq_nl'                     => '::faq_nl::',
+            'examples_of_usage_en'       => '::examples_of_usage_en::',
+            'examples_of_usage_nl'       => '::examples_of_usage_nl::',
+            'additional_info_heading_en' => '::additional_info_heading_en::',
+            'additional_info_heading_nl' => '::additional_info_heading_nl::',
+            'additional_info_text_en'    => '::additional_info_text_en::',
+            'additional_info_text_nl'    => '::additional_info_text_nl::',
+
+            'why_unfit_en' => '::why_unfit_en::',
+            'why_unfit_nl' => '::why_unfit_nl::',
         ];
 
         $this
@@ -74,13 +110,9 @@ class UpdateTest extends TestCase
             ->assertSessionDoesntHaveErrors()
             ->assertRedirect(route('information-manager.tool.index'));
 
-        $this->assertEquals(
-            $data['categories'],
-            $institute->categories()->forTool($tool)->orderBy('id')->pluck('id')->toArray()
-        );
-
-        unset($data['categories']);
-        $this->assertDatabaseHas('institute_tool', $data);
+        $instituteTool = InstituteTool::forInstitute($this->informationManager->institute)->forTool($tool)->first();
+        $concept = $instituteTool->concept;
+        $this->assertNotNull($concept);
     }
 
     /** @test */
@@ -97,7 +129,8 @@ class UpdateTest extends TestCase
         $this
             ->actingAs($this->informationManager)
             ->put(route('information-manager.tool.update', $instituteTool->tool), [
-                'description_1' => ':: description_1 ::',
+                ...$this->validRequestData(),
+                'conditions_en' => '::conditions_en::',
             ])
 
             ->assertSessionDoesntHaveErrors()
@@ -118,12 +151,11 @@ class UpdateTest extends TestCase
         $this
             ->actingAs($this->informationManager)
             ->put(route('information-manager.tool.update', $instituteTool->tool), [
-                'description_1' => ':: description_1 ::',
+                ...$this->validRequestData(),
+                'conditions_en' => '::conditions_en::',
             ])
 
-            ->assertSessionHasErrors([
-                'status' => trans('validation.required'),
-            ]);
+            ->assertSessionHasErrors(['status']);
     }
 
     /** @test */
@@ -133,30 +165,12 @@ class UpdateTest extends TestCase
 
         $tool = Tool::factory()->published()->create();
         $institute->tools()->attach($tool, [
-            'status' => Status::PROHIBITED,
+            'status' => Status::DISALLOWED,
         ]);
 
-        $categories = Category::factory()->count(2)->for($institute)->create();
-
         $data = [
-            'categories'              => $categories->pluck('id')->sort()->toArray(),
-            'description_1'           => ':: description_1 ::',
-            'description_2'           => ':: description_2 ::',
-            'extra_information_title' => ':: extra_information_title ::',
-            'extra_information'       => ':: extra_information ::',
-            'support_title_1'         => ':: support_title_1 ::',
-            'support_email_1'         => 'assist@paqt.com',
-            'support_title_2'         => ':: support_title_2 ::',
-            'support_email_2'         => 'info@paqt.com',
-            'manual_title_1'          => ':: manual_title_1 ::',
-            'manual_url_1'            => 'https://manuals.com/summary',
-            'manual_title_2'          => ':: manual_title_2 ::',
-            'manual_url_2'            => 'https://manuals.com/extensive',
-            'video_title_1'           => ':: video_title_1 ::',
-            'video_url_1'             => 'https://youtube.com/12345678',
-            'video_title_2'           => ':: video_title_2 ::',
-            'video_url_2'             => 'https://youtube.com/87654321',
-            'status'                  => Status::SUPPORTED,
+            ...$this->validRequestData(),
+            'status' => Status::ALLOWED,
         ];
 
         $this
@@ -166,13 +180,9 @@ class UpdateTest extends TestCase
             ->assertSessionDoesntHaveErrors()
             ->assertRedirect(route('information-manager.tool.index'));
 
-        $this->assertEquals(
-            $data['categories'],
-            $institute->categories()->forTool($tool)->orderBy('id')->pluck('id')->toArray()
-        );
-
-        unset($data['categories']);
-        $this->assertDatabaseHas('institute_tool', $data);
+        $instituteTool = InstituteTool::forInstitute($this->informationManager->institute)->forTool($tool)->first();
+        $concept = $instituteTool->concept;
+        $this->assertNotNull($concept);
     }
 
     /** @test */
@@ -227,47 +237,51 @@ class UpdateTest extends TestCase
     }
 
     /** @test */
-    public function images_can_be_uploaded(): void
+    public function an_existing_pending_edit_is_deleted(): void
     {
         $tool = Tool::factory()->published()->create();
         $this->informationManager->institute->tools()->attach($tool);
+        $pendingEdit = PendingToolEdit::factory([
+            'tool_id'      => $tool->id,
+            'user_id'      => $this->informationManager->id,
+            'institute_id' => $this->informationManager->institute->id,
+        ])->create();
 
         $this
             ->actingAs($this->informationManager)
-            ->put(route('information-manager.tool.update', $tool), [
-                'description_1_image_filename' => UploadedFile::fake()->image('image2.jpg'),
-                'description_2_image_filename' => UploadedFile::fake()->image('image3.jpg'),
-            ])
+            ->put(route('information-manager.tool.update', $tool), $this->validRequestData())
 
             ->assertSessionDoesntHaveErrors()
             ->assertRedirect(route('information-manager.tool.index'));
 
-        $instituteTool = $this->informationManager->institute->tools()->find($tool)->pivot;
-
-        foreach (InstituteTool::$images as $imageField) {
-            $this->assertNotEmpty($instituteTool->$imageField);
-            $this->assertTrue(Storage::disk(InstituteTool::$disk)->exists($instituteTool->$imageField));
-
-            Storage::disk(InstituteTool::$disk)->delete($instituteTool->$imageField);
-        }
+        $this->assertNull($pendingEdit->fresh());
     }
 
     /** @test */
-    public function files_other_than_images_can_not_be_uploaded(): void
+    public function a_tool_log_will_be_created(): void
     {
         $tool = Tool::factory()->published()->create();
         $this->informationManager->institute->tools()->attach($tool);
 
         $this
             ->actingAs($this->informationManager)
-            ->put(route('information-manager.tool.update', $tool), [
-                'description_1_image_filename' => UploadedFile::fake()->image('file2.docx'),
-                'description_2_image_filename' => UploadedFile::fake()->image('file3.exe'),
-            ])
+            ->put(route('information-manager.tool.update', $tool), $this->validRequestData())
 
-            ->assertSessionHasErrors([
-                'description_1_image_filename' => trans('validation.image'),
-                'description_2_image_filename' => trans('validation.image'),
-            ]);
+            ->assertSessionDoesntHaveErrors()
+            ->assertRedirect(route('information-manager.tool.index'));
+
+        $log = ToolLog::first();
+
+        $this->assertNotNull($log);
+        $this->assertEquals($tool->id, $log->tool->id);
+        $this->assertEquals($this->informationManager->id, $log->user->id);
+        $this->assertEquals($this->informationManager->institute->id, $log->institute->id);
+    }
+
+    private function validRequestData(): array
+    {
+        return [
+            'categories' => [],
+        ];
     }
 }

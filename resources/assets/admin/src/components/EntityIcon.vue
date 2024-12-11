@@ -1,6 +1,10 @@
 <template>
     <div :class="iconSize">
-        <img :src="image" :alt="text" style="object-fit: cover; height: 100%; width: 100%" />
+        <img
+            :src="image"
+            :alt="text"
+            style="object-fit: cover; height: 100%; width: 100%"
+        />
     </div>
 </template>
 

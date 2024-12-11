@@ -1,36 +1,62 @@
 <template>
     <div class="flex text-sm text-gray-500 | py-4">
         <div class="flex-1 | space-y-2">
-            <h3 v-if="experience.title" class="text-black font-bold text-lg" v-text="experience.title" />
-
-            <div class="flex | text-sm | space-x-2">
-                <span
-                    class="font-medium text-gray-900"
-                    v-text="`${experience.user.name} - ${experience.user.institute.full_name}`"
+            <div class="flex items-center justify-between">
+                <h3
+                    v-if="experience.title"
+                    class="text-black font-bold text-lg"
+                    v-text="experience.title"
                 />
 
-                <span v-text="`|`" />
-
-                <time :datetime="experience.created_at" v-text="readableDate(experience.created_at)" />
-            </div>
-
-            <div class="flex items-center justify-between">
-                <StarRating :rating="experience.rating" />
-
                 <div class="flex | space-x-2">
-                    <a v-if="experience.permissions.update" href="#" @click.prevent="modalOpen = true">
-                        <FontAwesomeIcon icon="pencil-alt" class="text-gray-500 hover:text-gray-700" />
+                    <a
+                        v-if="experience.permissions.update"
+                        href="#"
+                        @click.prevent="modalOpen = true"
+                    >
+                        <FontAwesomeIcon
+                            icon="pencil-alt"
+                            class="text-gray-500 hover:text-gray-700"
+                        />
                     </a>
 
-                    <a v-if="experience.permissions.delete" href="#" @click.prevent="deleteExperience()">
-                        <FontAwesomeIcon icon="trash-alt" class="text-gray-500 hover:text-gray-700" />
+                    <a
+                        v-if="experience.permissions.delete"
+                        href="#"
+                        @click.prevent="deleteExperience()"
+                    >
+                        <FontAwesomeIcon
+                            icon="trash-alt"
+                            class="text-gray-500 hover:text-gray-700"
+                        />
                     </a>
                 </div>
             </div>
 
-            <div v-if="experience.message" class="max-w-none | prose prose-md text-gray-500">
-                <!-- eslint-disable-next-line vue/no-v-html -->
-                <p v-html="experience.message_display" />
+            <div class="flex | text-sm | space-x-2">
+                <span
+                    class="font-medium text-gray-900"
+                    v-text="userDisplay"
+                />
+
+                <span v-text="`|`" />
+
+                <time
+                    :datetime="experience.created_at"
+                    v-text="readableDate(experience.created_at)"
+                />
+            </div>
+
+            <div
+                v-if="experience.message"
+                class="max-w-none | prose prose-md text-gray-500"
+            >
+                <h4
+                    class="text-black font-bold"
+                    v-text="trans('experience.attributes.message')"
+                />
+
+                <ProseParagraph :value="experience.message" />
             </div>
         </div>
 
@@ -44,15 +70,17 @@
 </template>
 
 <script>
-import StarRating from '@/components/StarRating';
+import { router } from '@inertiajs/vue2';
+
 import EditExperienceModal from '@/components/modal/EditExperienceModal';
+import ProseParagraph from '@/components/ProseParagraph';
 
 import { readableDate } from '@/helpers/datetime';
 
 export default {
     components: {
-        StarRating,
         EditExperienceModal,
+        ProseParagraph,
     },
     props: {
         experience: {
@@ -70,6 +98,20 @@ export default {
             modalOpen: false,
         };
     },
+    computed: {
+        /**
+         * Returns the value to display for the user who created the experience
+         *
+         * @returns {string}
+         */
+        userDisplay() {
+            const userName = this.experience.user
+                ? this.experience.user.name
+                : trans('experience.user_outside_institute');
+
+            return `${userName} - ${this.experience.institute.full_name}`;
+        },
+    },
     methods: {
         readableDate,
 
@@ -82,7 +124,7 @@ export default {
                 return;
             }
 
-            this.$inertia.delete(route('teacher.experience.destroy', this.experience), {
+            router.delete(route('teacher.experience.destroy', this.experience), {
                 preserveScroll: true,
             });
         },

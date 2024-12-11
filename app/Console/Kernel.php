@@ -18,8 +18,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule
             ->command('activitylog:clean')
-            ->daily()
-            ->thenPing(config('heartbeat.activity-log-clean'));
+            ->daily();
     }
 
     protected function commands(): void

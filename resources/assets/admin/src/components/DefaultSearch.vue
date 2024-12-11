@@ -2,7 +2,7 @@
     <div class="rounded shadow-sm">
         <div class="relative | flex items-stretch flex-grow | focus-within:z-10">
             <div class="absolute inset-y-0 left-0 | flex items-center | pointer-events-none | pl-3">
-                <font-awesome-icon icon="search" />
+                <FontAwesomeIcon icon="search" />
             </div>
 
             <input

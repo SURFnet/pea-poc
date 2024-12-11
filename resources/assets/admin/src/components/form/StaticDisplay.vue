@@ -4,9 +4,17 @@
             {{ label }}
         </InputLabel>
 
-        <div v-bind="$attrs" class="w-full block | sm:text-sm | mt-1" :class="inputClass" v-text="value" />
+        <div
+            v-bind="$attrs"
+            class="w-full block | sm:text-sm | mt-1"
+            :class="inputClass"
+            v-text="value"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 

@@ -1,6 +1,11 @@
 <template>
     <div>
-        <InputLabel v-if="label" :for="id" :required="required">
+        <InputLabel
+            v-if="label"
+            :for="id"
+            :tool-tip="toolTip"
+            :required="required"
+        >
             {{ label }}
         </InputLabel>
 
@@ -14,17 +19,31 @@
             :reduce="(option) => option.value"
         >
             <template #search="{ attributes, events }">
-                <input class="vs__search" :required="isRequired" v-bind="attributes" v-on="events" />
+                <input
+                    class="vs__search"
+                    :required="isRequired"
+                    v-bind="attributes"
+                    v-on="events"
+                />
             </template>
         </v-select>
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import vSelect from 'vue-select';
 import 'vue-select/dist/vue-select.css';
 
@@ -51,8 +70,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `select-input-${this._uid}`;
+                return `select-input-${uniqueId()}`;
             },
         },
         value: {
@@ -76,6 +94,10 @@ export default {
             default: false,
         },
         text: {
+            type: String,
+            default: null,
+        },
+        toolTip: {
             type: String,
             default: null,
         },
@@ -109,7 +131,6 @@ export default {
                 'vs__dropdown--error': this.error,
             };
         },
-
         /**
          * Determines if the select is required and should show the HTML5 error message.
          *
@@ -117,14 +138,6 @@ export default {
          */
         isRequired() {
             return this.required && !this.localValue;
-        },
-    },
-    methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
         },
     },
 };

@@ -4,15 +4,9 @@ declare(strict_types=1);
 
 use Illuminate\Database\Migrations\Migration;
 
-class {{ class }} extends Migration
-{
+return new class() extends Migration {
     public function up(): void
     {
         //
     }
-
-    public function down(): void
-    {
-        //
-    }
-}
+};

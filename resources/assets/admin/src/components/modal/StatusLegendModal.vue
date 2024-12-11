@@ -1,10 +1,19 @@
 <template>
-    <BaseModal :value="open" @close="close">
+    <BaseModal
+        :value="open"
+        @close="close"
+    >
         <template #title>
-            <h3 class="text-xl font-medium text-gray-900 | mb-4" v-text="trans('modal.status_legend.title')" />
+            <h3
+                class="text-xl font-medium text-gray-900 | mb-4"
+                v-text="trans('modal.status_legend.title')"
+            />
         </template>
 
-        <p class="font-normal text-sm | mb-4" v-text="trans('modal.status_legend.description')" />
+        <p
+            class="font-normal text-sm | mb-4"
+            v-text="trans('modal.status_legend.description')"
+        />
 
         <AttributeList>
             <AttributeItem
@@ -13,10 +22,13 @@
                 :class="[legendStatus === status ? 'bg-blue-50' : '']"
             >
                 <template #label>
-                    <ToolStatus :status="legendStatus" :text="trans('institute.tool.statuses.' + legendStatus)" />
+                    <ToolStatus
+                        :status="legendStatus"
+                        :text="trans(`institute.tool.statuses.${legendStatus}`)"
+                    />
                 </template>
 
-                {{ trans('modal.status_legend.statuses.' + legendStatus) }}
+                {{ trans(`modal.status_legend.statuses.${legendStatus}`) }}
             </AttributeItem>
         </AttributeList>
     </BaseModal>

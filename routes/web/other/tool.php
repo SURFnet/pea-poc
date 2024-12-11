@@ -6,4 +6,4 @@ use App\Http\Controllers\Other\ToolController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('tool', ToolController::class)
-    ->only(['index', 'show']);
+    ->only(['show']);

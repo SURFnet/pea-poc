@@ -16,7 +16,7 @@ class CanSupportTest extends TestCase
     /** @test */
     public function a_teacher_can_get_support_for_a_tool(): void
     {
-        $instituteTool = $this->createInstituteTool($this->teacher, InstituteToolStatus::RECOMMENDED);
+        $instituteTool = $this->createInstituteTool($this->teacher, InstituteToolStatus::ALLOWED);
 
         $this->assertTrue($this->teacher->can('getSupport', $instituteTool->tool));
     }
@@ -24,7 +24,7 @@ class CanSupportTest extends TestCase
     /** @test */
     public function an_information_manager_can_get_support_for_a_tool(): void
     {
-        $instituteTool = $this->createInstituteTool($this->informationManager, InstituteToolStatus::RECOMMENDED);
+        $instituteTool = $this->createInstituteTool($this->informationManager, InstituteToolStatus::ALLOWED);
 
         $this->assertTrue($this->informationManager->can('getSupport', $instituteTool->tool));
     }
@@ -32,7 +32,7 @@ class CanSupportTest extends TestCase
     /** @test */
     public function an_content_manager_can_not_get_support_for_a_tool(): void
     {
-        $instituteTool = $this->createInstituteTool($this->contentManager, InstituteToolStatus::RECOMMENDED);
+        $instituteTool = $this->createInstituteTool($this->contentManager, InstituteToolStatus::DISALLOWED);
 
         $this->assertTrue($this->contentManager->cannot('getSupport', $instituteTool->tool));
     }
@@ -75,17 +75,15 @@ class CanSupportTest extends TestCase
     public function supportedStatuses(): array
     {
         return [
-            [InstituteToolStatus::RECOMMENDED],
-            [InstituteToolStatus::SUPPORTED],
+            [InstituteToolStatus::ALLOWED],
+            [InstituteToolStatus::ALLOWED_UNDER_CONDITIONS],
         ];
     }
 
     public function unsupportedStatuses(): array
     {
         return [
-            [InstituteToolStatus::FREE_TO_USE],
-            [InstituteToolStatus::PROHIBITED],
-            [InstituteToolStatus::NOT_RECOMMENDED],
+            [InstituteToolStatus::DISALLOWED],
         ];
     }
 }

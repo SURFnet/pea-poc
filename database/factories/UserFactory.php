@@ -6,14 +6,11 @@ namespace Database\Factories;
 
 use App\Enums\Auth\Role;
 use App\Models\Institute;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/** @extends Factory<\App\Models\User> */
 class UserFactory extends Factory
 {
-    /** @var string */
-    protected $model = User::class;
-
     public function definition(): array
     {
         $createdAt = $this->faker->dateTimeBetween('-3 months', '-2 hours');
@@ -24,11 +21,12 @@ class UserFactory extends Factory
         }
 
         return [
-            'name' => $this->faker->name(),
-
-            'external_id'  => null,
             'institute_id' => fn () => Institute::factory(),
+            'external_id'  => null,
+            'email'        => $this->faker->email(),
+            'name'         => $this->faker->name(),
             'roles'        => $this->faker->randomElements(Role::toArray(), rand(1, 3)),
+            'language'     => $this->faker->randomElement(['en', 'nl']),
 
             'created_at' => $createdAt,
             'updated_at' => $updatedAt,

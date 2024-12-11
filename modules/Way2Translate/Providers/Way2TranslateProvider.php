@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\Way2Translate\Providers;
 
-use Diglactic\Breadcrumbs\Breadcrumbs;
 use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\DB;
@@ -64,14 +63,12 @@ class Way2TranslateProvider extends ServiceProvider
                 ->select('locale')
                 ->get();
 
-        if (!empty($dbActivatedLocales)) {
-            foreach ($dbActivatedLocales as $activatedLocale) {
-                if (!isset($allLocales[$activatedLocale->locale])) {
-                    continue;
-                }
-
-                $availableLocales[$activatedLocale->locale] = $allLocales[$activatedLocale->locale];
+        foreach ($dbActivatedLocales as $activatedLocale) {
+            if (!isset($allLocales[$activatedLocale->locale])) {
+                continue;
             }
+
+            $availableLocales[$activatedLocale->locale] = $allLocales[$activatedLocale->locale];
         }
 
         // we must have the active locale
@@ -100,8 +97,6 @@ class Way2TranslateProvider extends ServiceProvider
 
         $this->loadViewsFrom(__DIR__ . '/../Views', 'way2translate');
 
-        $this->registerBreadcrumbs();
-
         $router->aliasMiddleware('non-editable-languages', NonEditableLanguages::class);
 
         View::composer('way2translate::*', function ($view): void {
@@ -117,31 +112,5 @@ class Way2TranslateProvider extends ServiceProvider
         if (!$this->app->runningInConsole()) {
             $cacheService->enforceCacheIntegrity();
         }
-    }
-
-    private function registerBreadcrumbs(): void
-    {
-        $registerBreadcrumbs = config('way2translate.register-breadcrumbs');
-        $languagesAreEditable = config('way2translate.editable-languages');
-        $breadcrumbsExist = class_exists('Breadcrumbs');
-
-        if (!$registerBreadcrumbs || !$languagesAreEditable || !$breadcrumbsExist) {
-            return;
-        }
-
-        Breadcrumbs::register('way2translate.index', function ($breadcrumbs): void {
-            $breadcrumbs->push(
-                trans('Way2Translate::page.manage-translations'),
-                route('way2translate.index')
-            );
-        });
-
-        Breadcrumbs::register('way2translate.group.index', function ($breadcrumbs, $localeCode, $group = null): void {
-            $breadcrumbs->parent('way2translate.index');
-            $breadcrumbs->push(
-                trans('Way2Translate::page.group-translations'),
-                route('way2translate.group.index', [$localeCode, $group])
-            );
-        });
     }
 }

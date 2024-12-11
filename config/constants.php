@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 return [
     'general' => [
-        'domain'   => env('APP_DOMAIN'),
+        'domain'   => env('APP_DOMAIN', 'localhost'),
         'protocol' => env('APP_PROTOCOL', 'https://'),
     ],
     'registration' => [
@@ -65,4 +65,5 @@ return [
             'stage',
         ],
     ],
+    'piwik_key' => env('PIWIK_KEY'),
 ];

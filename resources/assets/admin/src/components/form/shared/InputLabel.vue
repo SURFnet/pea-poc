@@ -1,6 +1,14 @@
 <template>
-    <label class="block | font-source-sans text-gray-900" :class="labelClass">
+    <label
+        class="block | font-source-sans text-gray-900"
+        :class="labelClass"
+    >
         <slot />
+
+        <ToolTip
+            v-if="toolTip"
+            :text="toolTip"
+        />
 
         <IsRequired v-if="required" />
     </label>
@@ -8,13 +16,18 @@
 
 <script>
 import IsRequired from '@/components/form/shared/IsRequired';
+import ToolTip from '@/components/ToolTip.vue';
 
 export default {
-    components: { IsRequired },
+    components: { ToolTip, IsRequired },
     props: {
         required: {
             type: Boolean,
             default: false,
+        },
+        toolTip: {
+            type: String,
+            default: null,
         },
         largeLabel: {
             type: Boolean,

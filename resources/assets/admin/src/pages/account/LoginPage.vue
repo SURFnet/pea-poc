@@ -1,7 +1,11 @@
 <template>
     <div>
         <nav class="space-y-6">
-            <Btn :href="route('auth.surf.login')" variant="primary" class="w-full | justify-center">
+            <Btn
+                :href="route('auth.surf.login')"
+                variant="primary"
+                class="w-full | justify-center"
+            >
                 {{ trans('action.login-with-surfconext') }}
             </Btn>
 
@@ -19,6 +23,8 @@
 </template>
 
 <script>
+import { router } from '@inertiajs/vue2';
+
 import Layout from '@/layouts/AuthLayout';
 import Btn from '@/components/Btn';
 
@@ -38,7 +44,7 @@ export default {
          * Handles the form submission.
          */
         loginAsSuperAdmin() {
-            this.$inertia.post(route('account.login-as-super-admin'));
+            router.post(route('account.login-as-super-admin'));
         },
     },
     /**

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Resources\ContentManager;
 
 use App\Http\Resources\ToolResource as BaseToolResource;
+use App\Models\Tool;
 
 class ToolResource extends BaseToolResource
 {
@@ -15,12 +16,21 @@ class ToolResource extends BaseToolResource
      */
     public function toArray($request): array
     {
-        return array_merge(parent::toArray($request), [
-            'is_published' => $this->is_published,
+        /** @var Tool $tool */
+        $tool = $this->resource;
+
+        return [
+            ...parent::toArray($request),
+
+            'id'           => $tool->id,
+            'is_published' => $tool->is_published,
+
+            'description_short_en' => $tool->description_short_en,
+            'description_short_nl' => $tool->description_short_nl,
 
             'permissions' => [
-                'publish' => $request->user()->can('publish', $this->resource),
+                'publish' => $request->user()->can('publish', $tool),
             ],
-        ]);
+        ];
     }
 }

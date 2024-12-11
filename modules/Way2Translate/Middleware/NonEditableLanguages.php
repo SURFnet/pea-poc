@@ -17,7 +17,6 @@ class NonEditableLanguages
      * If languages are not editable, the language management routes should not be available.
      *
      * @param \Illuminate\Http\Request $request
-     * @param Closure                  $next
      *
      * @return mixed
      */

@@ -15,14 +15,14 @@ class UpdateTest extends TestCase
     public function can_be_done_with_minimal_data(): void
     {
         $experience = Experience::factory()->for($this->teacher)->create([
-            'rating' => 1,
+            'title' => '::test_title::',
         ]);
 
         $this
             ->actingAs($this->teacher)
             ->from(route('our.tool.show', $experience->tool))
             ->put(route('teacher.experience.update', $experience), [
-                'rating' => 4,
+                'title' => '::updated_test_title::',
             ])
 
             ->assertSessionDoesntHaveErrors()
@@ -31,7 +31,7 @@ class UpdateTest extends TestCase
         $this->assertDatabaseHas('experiences', [
             'id'      => $experience->id,
             'user_id' => $this->teacher->id,
-            'rating'  => 4,
+            'title'   => '::updated_test_title::',
         ]);
     }
 
@@ -39,20 +39,18 @@ class UpdateTest extends TestCase
     public function can_be_done_with_all_data(): void
     {
         $experience = Experience::factory()->for($this->teacher)->create([
-            'rating'  => 2,
             'title'   => '::old-title::',
-            'message' => '::old-message::',
+            'message' => '::old-tool_usage::',
         ]);
 
-        $maxMessage = str_repeat('a', config('validation.experience.message.max'));
+        $maxLengthMessage = str_repeat('a', config('validation.experience.message.max'));
 
         $this
             ->actingAs($this->teacher)
             ->from(route('our.tool.show', $experience->tool))
             ->put(route('teacher.experience.update', $experience), [
-                'rating'  => 4,
                 'title'   => '::title::',
-                'message' => $maxMessage,
+                'message' => $maxLengthMessage,
             ])
 
             ->assertSessionDoesntHaveErrors()
@@ -61,9 +59,8 @@ class UpdateTest extends TestCase
         $this->assertDatabaseHas('experiences', [
             'id'      => $experience->id,
             'user_id' => $this->teacher->id,
-            'rating'  => 4,
             'title'   => '::title::',
-            'message' => $maxMessage,
+            'message' => $maxLengthMessage,
         ]);
     }
 
@@ -76,38 +73,10 @@ class UpdateTest extends TestCase
             ->actingAs($this->teacher)
             ->from(route('our.tool.show', $experience->tool))
             ->put(route('teacher.experience.update', $experience), [
-                'rating'  => 4,
                 'message' => str_repeat('a', config('validation.experience.message.max') + 1),
             ])
 
             ->assertSessionHasErrors(['message']);
-    }
-
-    /**
-     * @test
-     *
-     * @dataProvider ratingData
-     */
-    public function the_rating_needs_to_be_valid(int $rating, bool $isValid): void
-    {
-        $experience = Experience::factory()->for($this->teacher)->create();
-
-        $request = $this
-            ->actingAs($this->teacher)
-            ->from(route('our.tool.show', $experience->tool))
-            ->put(route('teacher.experience.update', $experience), [
-                'rating' => $rating,
-            ]);
-
-        if (!$isValid) {
-            $request->assertSessionHasErrors('rating');
-
-            return;
-        }
-
-        $request
-                ->assertSessionDoesntHaveErrors()
-                ->assertRedirect(route('our.tool.show', $experience->tool));
     }
 
     /** @test */
@@ -159,21 +128,5 @@ class UpdateTest extends TestCase
 
         $this
             ->put(route('teacher.experience.update', $experience));
-    }
-
-    public function ratingData(): array
-    {
-        return [
-            [1, true],
-            [2, true],
-            [3, true],
-            [4, true],
-            [5, true],
-
-            [-1, false],
-            [0, false],
-            [6, false],
-            [500, false],
-        ];
     }
 }

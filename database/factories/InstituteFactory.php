@@ -4,33 +4,34 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Helpers\File;
 use App\Models\Institute;
-use Closure;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Storage;
 
+/** @extends Factory<\App\Models\Institute> */
 class InstituteFactory extends Factory
 {
-    /** @var string */
-    protected $model = Institute::class;
-
     public function definition()
     {
         return [
-            'full_name'  => $this->faker->company(),
-            'short_name' => $this->faker->lexify('???'),
-            'domain'     => $this->faker->unique()->domainName(),
+            'full_name_en' => $this->faker->company(),
+            'full_name_nl' => $this->faker->company(),
+            'short_name'   => $this->faker->lexify('???'),
+            'domain'       => $this->faker->unique()->domainName(),
 
             'logo_full_filename'   => $this->selectRandomFile('seeding/institutes/full'),
             'logo_square_filename' => $this->selectRandomFile('seeding/institutes/square'),
             'banner_filename'      => $this->selectRandomFile('seeding/institutes/banner'),
+
+            'homepage_title_en' => $this->faker->optional()->sentence(rand(2, 4)),
+            'homepage_body_en'  => $this->faker->optional()->text(),
+            'homepage_title_nl' => $this->faker->optional()->sentence(rand(2, 4)),
+            'homepage_body_nl'  => $this->faker->optional()->text(),
         ];
     }
 
-    private function selectRandomFile(string $path): Closure
+    private function selectRandomFile(string $path): string
     {
-        return fn (): string => basename(
-            Storage::putFile(Institute::$disk, $this->faker->file(resource_path($path)))
-        );
+        return File::storeFromPath($this->faker->file(resource_path($path)), Institute::$disk);
     }
 }

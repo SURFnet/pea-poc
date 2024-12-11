@@ -1,20 +1,28 @@
 <template>
     <div>
-        <InputLabel v-if="label" :required="required">
+        <InputLabel
+            v-if="label"
+            :required="required"
+        >
             {{ label }}
         </InputLabel>
 
         <div class="mt-4 space-y-4">
-            <div v-for="item in options" :key="item.value" class="flex items-center">
+            <div
+                v-for="item in options"
+                :key="item.value"
+                class="flex items-center"
+            >
                 <input
                     :id="`radio-input-${item.value}`"
                     ref="input"
+                    :name="radioGroupName"
                     :value="item.value"
                     type="radio"
                     v-bind="$attrs"
                     class="h-4 w-4 | text-blue-600 border-gray-300 | focus:ring-blue-400"
                     :class="inputClass"
-                    :checked="value == item.value"
+                    :checked="isChecked(item)"
                     @change="$emit('input', $event.target.value)"
                 />
 
@@ -26,13 +34,22 @@
             </div>
         </div>
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -45,24 +62,7 @@ export default {
     },
     inheritAttrs: false,
     props: {
-        id: {
-            type: String,
-
-            /**
-             * Set a default id for the check input.
-             *
-             * @returns {string}
-             */
-            default() {
-                // eslint-disable-next-line
-                return `radio-input-${this._uid}`;
-            },
-        },
         value: {
-            type: [Number, String, Boolean, Array],
-            default: null,
-        },
-        checkedValue: {
             type: [Number, String, Boolean, Array],
             default: null,
         },
@@ -87,6 +87,12 @@ export default {
             default: null,
         },
     },
+    /** @returns {object} */
+    data() {
+        return {
+            radioGroupName: `radio-group-${uniqueId()}`,
+        };
+    },
     computed: {
         /**
          * Determines the input class based on the current state.
@@ -101,10 +107,13 @@ export default {
     },
     methods: {
         /**
-         * Focuses the input.
+         * @param {object} item
+         * @param {string} item.value
+         *
+         * @returns {boolean}
          */
-        focus() {
-            this.$refs.input.focus();
+        isChecked({ value }) {
+            return this.value === value;
         },
     },
 };

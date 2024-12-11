@@ -1,5 +1,8 @@
 <template>
-    <nav class="flex space-x-2 | pt-6" :class="alignmentClass">
+    <nav
+        class="flex space-x-2 | pt-6"
+        :class="alignmentClass"
+    >
         <slot />
     </nav>
 </template>

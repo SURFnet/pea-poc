@@ -1,12 +1,21 @@
 <template>
     <div>
-        <InputLabel v-if="label" :for="id" :required="required" :large-label="largeLabel">
+        <InputLabel
+            v-if="label"
+            :for="id"
+            :required="required"
+            :large-label="largeLabel"
+        >
             {{ label }}
         </InputLabel>
 
         <template v-if="imagePreview">
             <div class="aspect-w-3 aspect-h-2 | mt-2 mb-4">
-                <img :src="imagePreview" alt="" class="object-cover | rounded-lg" />
+                <img
+                    :src="imagePreview"
+                    alt=""
+                    class="object-cover | rounded-lg"
+                />
             </div>
         </template>
 
@@ -16,16 +25,29 @@
             @dragenter.prevent
             @dragover.prevent
         >
-            <div v-if="!uploadedFile" class="space-y-2 text-center">
-                <FontAwesomeIcon icon="file-upload" class="text-4xl text-gray-400" />
+            <div
+                v-if="!uploadedFile"
+                class="space-y-2 text-center"
+            >
+                <FontAwesomeIcon
+                    icon="file-upload"
+                    class="text-4xl text-gray-400"
+                />
+
                 <div class="flex flex-col text-sm text-gray-600">
-                    <p class="pl-1" v-text="trans('action.file_upload.text')" />
+                    <p
+                        class="pl-1"
+                        v-text="trans('action.file_upload.text')"
+                    />
 
                     <label
                         :for="id"
                         class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-light focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary"
                     >
-                        <span class="font-bold" v-text="trans('action.file_upload.clickable')" />
+                        <span
+                            class="font-bold"
+                            v-text="trans('action.file_upload.clickable')"
+                        />
 
                         <input
                             :id="id"
@@ -40,12 +62,23 @@
                     </label>
                 </div>
 
-                <p v-if="requirements" class="text-xs text-gray-500" v-text="requirements" />
+                <p
+                    v-if="requirements"
+                    class="text-xs text-gray-500"
+                    v-text="requirements"
+                />
             </div>
 
-            <div v-else class="w-full flex flex-col items-center text-sm">
+            <div
+                v-else
+                class="w-full flex flex-col items-center text-sm"
+            >
                 <div class="w-full flex flex-row items-center">
-                    <span class="whitespace-nowrap overflow-hidden text-ellipsis" v-text="uploadedFile.name" />
+                    <span
+                        class="whitespace-nowrap overflow-hidden text-ellipsis"
+                        v-text="uploadedFile.name"
+                    />
+
                     <span
                         class="whitespace-nowrap text-xs text-gray-400 ml-1"
                         v-text="`(${filesize(uploadedFile.size)})`"
@@ -60,13 +93,22 @@
             </div>
         </div>
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -88,13 +130,8 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `file-input-${this._uid}`;
+                return `file-input-${uniqueId()}`;
             },
-        },
-        type: {
-            type: String,
-            default: 'text',
         },
         value: {
             type: File,
@@ -156,7 +193,6 @@ export default {
 
             return inputClasses.join(' | ');
         },
-
         /**
          * Determines the wrapper class based on the current state.
          *
@@ -176,13 +212,6 @@ export default {
     },
     methods: {
         /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
-        },
-
-        /**
          * $emits to the parent.
          *
          * Triggers whenever someone uploads a file via the input.
@@ -197,7 +226,6 @@ export default {
 
             this.$emit('change', uploadedFile);
         },
-
         /**
          * Removes the uploaded file
          */
@@ -206,7 +234,6 @@ export default {
 
             this.$emit('change', null);
         },
-
         /**
          * Calculates the filesize
          *

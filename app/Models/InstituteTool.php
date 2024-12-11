@@ -4,54 +4,106 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\Institute\Tool\Concept\CreateAction as CreateConceptAction;
 use App\Enums\InstituteTool\Status;
-use App\Helpers\Format;
+use App\Enums\Tags\TagTypes;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\Pivot;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Support\Collection;
+use Spatie\Tags\HasTags;
 
-class InstituteTool extends Pivot
+class InstituteTool extends Model
 {
-    use HasFactory;
+    use HasFactory, HasTags;
 
     /** @var bool */
     public $incrementing = true;
 
-    /** @var array */
+    protected $table = 'institute_tool';
+
+    /** @var array<int, string> */
     protected $fillable = [
         'alternative_tool_id',
-        'description_1',
-        'description_2',
-        'extra_information_title',
-        'extra_information',
-        'support_title_1',
-        'support_email_1',
-        'support_title_2',
-        'support_email_2',
-        'manual_title_1',
-        'manual_url_1',
-        'manual_title_2',
-        'manual_url_2',
-        'video_title_1',
-        'video_url_1',
-        'video_title_2',
-        'video_url_2',
+
         'status',
-        'why_unfit',
+        'conditions_en',
+        'conditions_nl',
+
+        'links_with_other_tools_en',
+        'links_with_other_tools_nl',
+        'sla_url',
+
+        'privacy_contact',
+        'privacy_evaluation_url',
+        'security_evaluation_url',
+        'data_classification',
+
+        'how_to_login_en',
+        'how_to_login_nl',
+        'availability_en',
+        'availability_nl',
+        'licensing_en',
+        'licensing_nl',
+        'request_access_en',
+        'request_access_nl',
+        'instructions_en',
+        'instructions_nl',
+        'instructions_manual_1_url',
+        'instructions_manual_2_url',
+        'instructions_manual_3_url',
+
+        'faq_en',
+        'faq_nl',
+        'examples_of_usage_en',
+        'examples_of_usage_nl',
+        'additional_info_heading_en',
+        'additional_info_heading_nl',
+        'additional_info_text_en',
+        'additional_info_text_nl',
+
+        'why_unfit_en',
+        'why_unfit_nl',
+
         'published_at',
     ];
 
-    /** @var array */
+    /** @var array<string, string> */
     protected $casts = [
         'published_at' => 'datetime',
     ];
 
-    public static string $disk = 'tools';
+    public static function getSearchFields(): array
+    {
+        return [
+            'privacy_contact',
+            ...self::getLocalizedFields(),
+        ];
+    }
 
-    public static array $images = [
-        'description_1_image_filename',
-        'description_2_image_filename',
-    ];
+    public static function getLocalizedFields(): array
+    {
+        return [
+            'conditions',
+            'links_with_other_tools',
+            'how_to_login',
+            'availability',
+            'licensing',
+            'instructions',
+            'faq',
+            'examples_of_usage',
+            'additional_info_text',
+            'why_unfit',
+        ];
+    }
+
+    public function categories(): Collection
+    {
+        return $this->tagsWithType(TagTypes::CATEGORIES);
+    }
 
     public function institute(): BelongsTo
     {
@@ -63,9 +115,35 @@ class InstituteTool extends Pivot
         return $this->belongsTo(Tool::class);
     }
 
+    public function concept(): HasOne
+    {
+        return $this->hasOne(ConceptInstituteTool::class, 'institute_tool_id');
+    }
+
     public function alternativeTool(): BelongsTo
     {
         return $this->belongsTo(Tool::class, 'alternative_tool_id');
+    }
+
+    public function customFields(): BelongsToMany
+    {
+        return $this
+            ->belongsToMany(CustomField::class, 'custom_field_values')
+            ->withTimestamps()
+            ->withPivot([
+                'value_en',
+                'value_nl',
+            ]);
+    }
+
+    public function scopeForTool(Builder $query, Tool $tool): Builder
+    {
+        return $query->where('tool_id', $tool->id);
+    }
+
+    public function scopeForInstitute(Builder $query, Institute $institute): Builder
+    {
+        return $query->where('institute_id', $institute->id);
     }
 
     public function getIsPublishedAttribute(): bool
@@ -86,23 +164,37 @@ class InstituteTool extends Pivot
         return $this->status;
     }
 
-    public function getDescription1DisplayAttribute(): string
+    public function getOrCreateConceptVersion(): ConceptInstituteTool
     {
-        return Format::stripTagsAndConvertNewlineToHtml($this->description_1);
+        $concept = $this->concept;
+        if ($concept === null) {
+            (new CreateConceptAction())->execute($this->tool, $this->institute);
+
+            $concept = $this->refresh()->concept;
+        }
+
+        return $concept;
     }
 
-    public function getDescription2DisplayAttribute(): string
+    public function alternativeTools(): BelongsToMany
     {
-        return Format::stripTagsAndConvertNewlineToHtml($this->description_2);
+        return $this->belongsToMany(
+            Tool::class,
+            'alternative_tool_institute_tools',
+        );
     }
 
-    public function getExtraInformationDisplayAttribute(): string
+    public function prohibitedAlternativeTools(): BelongsToMany
     {
-        return Format::stripTagsAndConvertNewlineToHtml($this->extra_information);
+        return $this->alternativeTools()->whereHas('instituteTools', function (Builder $builder): Builder {
+            return $builder->where('status', '=', Status::DISALLOWED);
+        });
     }
 
-    public function getWhyUnfitDisplayAttribute(): string
+    public function allowedAlternativeTools(): BelongsToMany
     {
-        return Format::stripTagsAndConvertNewlineToHtml($this->why_unfit);
+        return $this->alternativeTools()->whereHas('instituteTools', function (Builder $builder): Builder {
+            return $builder->whereIn('status', [Status::ALLOWED, Status::ALLOWED_UNDER_CONDITIONS]);
+        });
     }
 }

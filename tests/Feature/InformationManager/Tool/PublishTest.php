@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace Tests\Feature\InformationManager\Tool;
 
 use App\Enums\InstituteTool\Status;
+use App\Models\InstituteTool;
+use App\Models\PendingToolEdit;
 use App\Models\Tool;
+use App\Models\ToolLog;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
 use Tests\TestCase;
@@ -19,8 +22,9 @@ class PublishTest extends TestCase
         $this->informationManager->institute->tools()->attach($tool);
 
         $data = [
-            'description_1' => ':: Description 1::',
-            'status'        => Status::SUPPORTED,
+            ...$this->validRequestData(),
+            'status'        => Status::ALLOWED,
+            'conditions_en' => ':: Conditions EN::',
         ];
 
         $this
@@ -30,12 +34,15 @@ class PublishTest extends TestCase
             ->assertSessionDoesntHaveErrors()
             ->assertRedirect(route('information-manager.tool.index'));
 
-        $this->assertDatabaseHas('institute_tool', array_merge($data, [
-            'institute_id' => $this->informationManager->institute->id,
-            'tool_id'      => $tool->id,
-        ]));
+        $this->assertDatabaseHas('institute_tool', [
+            'conditions_en' => ':: Conditions EN::',
+            'status'        => Status::ALLOWED,
+            'institute_id'  => $this->informationManager->institute->id,
+            'tool_id'       => $tool->id,
+        ]);
 
-        $instituteTool = $this->informationManager->institute->tools()->find($tool)->pivot;
+        $institute = $this->informationManager->institute;
+        $instituteTool = InstituteTool::forTool($tool)->forInstitute($institute)->firstOrFail();
         $this->assertTrue($instituteTool->is_published);
     }
 
@@ -49,9 +56,7 @@ class PublishTest extends TestCase
             ->actingAs($this->informationManager)
             ->put(route('information-manager.tool.publish', $tool), [])
 
-            ->assertSessionHasErrors([
-                'status' => trans('validation.required'),
-            ]);
+            ->assertSessionHasErrors(['status']);
     }
 
     /** @test */
@@ -104,5 +109,62 @@ class PublishTest extends TestCase
 
         $this
             ->put(route('information-manager.tool.publish', $tool));
+    }
+
+    /** @test */
+    public function an_existing_pending_edit_is_deleted(): void
+    {
+        $tool = Tool::factory()->published()->create();
+        $this->informationManager->institute->tools()->attach($tool);
+        $pendingEdit = PendingToolEdit::factory([
+            'tool_id'      => $tool->id,
+            'user_id'      => $this->informationManager->id,
+            'institute_id' => $this->informationManager->institute->id,
+        ])->create();
+
+        $this
+            ->actingAs($this->informationManager)
+            ->put(route('information-manager.tool.publish', $tool), [
+                ...$this->validRequestData(),
+                'status'        => Status::ALLOWED,
+                'conditions_en' => ':: Conditions EN::',
+            ])
+
+            ->assertSessionDoesntHaveErrors()
+            ->assertRedirect(route('information-manager.tool.index'));
+
+        $this->assertNull($pendingEdit->fresh());
+    }
+
+    /** @test */
+    public function a_tool_log_will_be_created(): void
+    {
+        $tool = Tool::factory()->published()->create();
+        $this->informationManager->institute->tools()->attach($tool);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->put(route('information-manager.tool.publish', $tool), [
+                ...$this->validRequestData(),
+                'status'        => Status::ALLOWED,
+                'conditions_en' => ':: Conditions EN::',
+            ])
+
+            ->assertSessionDoesntHaveErrors()
+            ->assertRedirect(route('information-manager.tool.index'));
+
+        $log = ToolLog::first();
+
+        $this->assertNotNull($log);
+        $this->assertEquals($tool->id, $log->tool->id);
+        $this->assertEquals($this->informationManager->id, $log->user->id);
+        $this->assertEquals($this->informationManager->institute->id, $log->institute->id);
+    }
+
+    private function validRequestData(): array
+    {
+        return [
+            'categories' => [],
+        ];
     }
 }

@@ -9,6 +9,7 @@
     <link href="{{ mix("css/main.css", 'dist/admin') }}" rel="stylesheet">
 </head>
 <body>
+    @include('layouts.shared.piwik.script')
     <div class="js-vue">
         @yield('page-body')
     </div>

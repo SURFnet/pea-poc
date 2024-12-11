@@ -1,5 +1,12 @@
 <template>
-    <component v-bind="$attrs" :is="componentType" :class="[classList, 'js-dropdown-item']" preserve-scroll>
+    <component
+        v-bind="$attrs"
+        :is="componentType"
+        :class="[classList, 'js-dropdown-item']"
+        preserve-scroll
+        :rel="rel"
+        :target="target"
+    >
         <slot />
     </component>
 </template>
@@ -21,7 +28,6 @@ export default {
             default: false,
         },
     },
-
     computed: {
         /**
          * Determines the component type.
@@ -35,7 +41,6 @@ export default {
 
             return 'InertiaLink';
         },
-
         /**
          * Determines the  CSS classes based on the state of the component
          *
@@ -56,6 +61,22 @@ export default {
             }
 
             return classList.join(' | ');
+        },
+        /**
+         * Determines the rel
+         *
+         * @returns {string|null}
+         */
+        rel() {
+            return this.external ? 'noopener noreferrer' : null;
+        },
+        /**
+         * Determines the target
+         *
+         * @returns {string|null}
+         */
+        target() {
+            return this.external ? '_bank' : '';
         },
     },
 };

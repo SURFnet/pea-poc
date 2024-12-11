@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Helpers\Auth;
-use App\Http\Resources\CategoryResource;
+use App\Helpers\Locale;
+use App\Http\Resources\TagResource;
 use App\Models\Institute;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -18,7 +19,11 @@ class HomeController extends Controller
         $institute = Auth::user()->institute;
 
         return Inertia::render('home/Index', [
-            'categories' => CategoryResource::collection($institute->categories),
+            'categories'          => TagResource::collection($institute->categories()),
+            'homepageInformation' => [
+                'title' => Locale::getLocalizedFieldValue($institute, 'homepage_title'),
+                'body'  => Locale::getLocalizedFieldValue($institute, 'homepage_body'),
+            ],
         ]);
     }
 }

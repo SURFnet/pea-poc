@@ -1,6 +1,10 @@
 <template>
     <div>
-        <InputLabel v-if="label" :for="id" :required="required">
+        <InputLabel
+            v-if="label"
+            :for="id"
+            :required="required"
+        >
             {{ label }}
         </InputLabel>
 
@@ -16,13 +20,22 @@
             @input="$emit('input', $event.target.value)"
         />
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -44,9 +57,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // the `this._uid` is a Vue variable.
-                // eslint-disable-next-line
-                return `number-input-${this._uid}`;
+                return `number-input-${uniqueId()}`;
             },
         },
         value: {
@@ -78,17 +89,9 @@ export default {
          */
         inputClass() {
             return {
-                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500': this
-                    .error,
+                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500':
+                    this.error,
             };
-        },
-    },
-    methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
         },
     },
 };

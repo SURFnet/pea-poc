@@ -5,10 +5,15 @@
                 {{ label }}
             </template>
 
-            <slot v-else name="label" />
+            <slot
+                v-else
+                name="label"
+            />
         </dt>
+
         <dd class="mt-1 text-sm font-source-sans text-gray-900 font-medium | sm:mt-0 sm:col-span-2">
             <slot v-if="hasValue" />
+
             <span v-else>—</span>
         </dd>
     </div>
@@ -22,7 +27,6 @@ export default {
             default: null,
         },
     },
-
     computed: {
         /**
          * Determine whether or not a value can be shown.

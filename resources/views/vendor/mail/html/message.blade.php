@@ -2,7 +2,7 @@
     {{-- Header --}}
     @slot('header')
         @component('mail::header', ['url' => config('app.url')])
-            {{ config('app.name') }}
+            <img src="{{ asset('/dist/admin/images/surf-logo.svg') }}" alt="{{ trans('mailable.logo_alt') }}" width="200" />
         @endcomponent
     @endslot
 

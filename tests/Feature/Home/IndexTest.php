@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Home;
 
-use App\Models\Category;
-use App\Models\Institute;
+use App\Enums\Tags\TagTypes;
+use App\Models\Tag;
 use Illuminate\Auth\AuthenticationException;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class IndexTest extends TestCase
@@ -28,7 +28,11 @@ class IndexTest extends TestCase
     /** @test */
     public function it_contains_the_categories_for_the_institute(): void
     {
-        Category::factory()->for($this->informationManager->institute)->count(3)->create();
+        Tag::factory(3)
+            ->for($this->informationManager->institute)
+            ->create([
+                'type' => TagTypes::CATEGORIES,
+            ]);
 
         $this
             ->actingAs($this->informationManager)
@@ -44,7 +48,9 @@ class IndexTest extends TestCase
     /** @test */
     public function it_does_not_contain_categories_for_other_institutes(): void
     {
-        Category::factory()->for(Institute::factory()->create())->create();
+        Tag::factory(3)->create([
+            'type' => TagTypes::CATEGORIES,
+        ]);
 
         $this
             ->actingAs($this->informationManager)

@@ -1,12 +1,21 @@
 <template>
     <div>
-        <InputLabel v-if="label" :required="required" :for="id">
+        <InputLabel
+            v-if="label"
+            :required="required"
+            :for="id"
+        >
             {{ label }}
         </InputLabel>
 
         <div class="relative rounded | mt-1">
             <div class="absolute inset-y-0 left-0 | flex items-center pointer-events-none | pl-3">
-                <span class="text-gray-500 sm:text-sm sm:leading-5" :class="inputClass"> € </span>
+                <span
+                    class="text-gray-500 sm:text-sm sm:leading-5"
+                    :class="inputClass"
+                >
+                    €
+                </span>
             </div>
 
             <input
@@ -23,13 +32,22 @@
             />
         </div>
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import InputLabel from '@/components/form/shared/InputLabel';
 import InvalidFeedback from '@/components/form/shared/InvalidFeedback';
 import HelpText from '@/components/form/shared/HelpText';
@@ -51,8 +69,7 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `currency-input-${this._uid}`;
+                return `currency-input-${uniqueId()}`;
             },
         },
         value: {
@@ -84,17 +101,9 @@ export default {
          */
         inputClass() {
             return {
-                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500': this
-                    .error,
+                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500':
+                    this.error,
             };
-        },
-    },
-    methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
         },
     },
 };

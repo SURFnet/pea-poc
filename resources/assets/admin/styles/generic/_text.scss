@@ -1,8 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700;1,900&display=swap');
 
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: 'Nunito';
+}
+
+.wysiwyg > * {
+    @apply mt-4;
+
+    // prevent top margin for the first element in the wysiwyg output, regardless of what type of element it is
+    @apply first:mt-0;
+}
+
+.wysiwyg > h1,
+.heading-1 {
+    @apply text-surf-h1 leading-surf-h1 text-surf-black font-surf-h1;
+}
+
+.wysiwyg > h2,
+.heading-2 {
+    @apply text-surf-h2 leading-surf-h2 text-surf-black font-surf-h2;
+}
+
+.wysiwyg > h3,
+.heading-3 {
+    @apply text-surf-h3 leading-surf-h3 text-surf-black font-surf-h3;
+}
+
+.wysiwyg > h4,
+.heading-4 {
+    @apply text-surf-h4 leading-surf-h4 text-surf-black font-surf-h4;
+}
+
+.wysiwyg > h5,
+.heading-5 {
+    @apply text-surf-h5 leading-surf-h5 text-surf-black font-surf-h5;
+}
+
+.wysiwyg > h6,
+.heading-6 {
+    @apply text-surf-h6 leading-surf-h6 text-surf-black font-surf-h6;
+}
+
+// Use a smaller top margin for any elements if they're preceded by a `<h5>`
+.wysiwyg > h5 + * {
+    @apply mt-[0.2rem];
+}
+
+html,
+body,
 p,
 a,
 span,
+.wysiwyg,
 .font-source-sans {
     font-family: 'Source Sans Pro';
 }

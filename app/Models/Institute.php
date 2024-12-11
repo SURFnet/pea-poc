@@ -4,46 +4,64 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\InstituteTool\Status as InstituteToolStatus;
+use App\Enums\Tags\TagTypes;
+use App\Helpers\Locale;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Institute extends Model
 {
     use HasFactory, LogsActivity;
 
-    /** @var array */
+    /** @var array<int, string> */
     protected $fillable = [
-        'full_name',
+        'full_name_en',
+        'full_name_nl',
         'short_name',
         'domain',
         'logo_square_filename',
         'logo_full_filename',
         'banner_filename',
+        'homepage_title_en',
+        'homepage_body_en',
+        'homepage_title_nl',
+        'homepage_body_nl',
     ];
-
-    protected static array $logAttributes = ['*'];
-
-    protected static array $logAttributesToIgnore = [
-        'updated_at',
-    ];
-
-    protected static bool $logOnlyDirty = true;
-
-    protected static bool $submitEmptyLogs = false;
 
     public static string $disk = 'institutes';
 
-    public function categories(): HasMany
+    public function getActivitylogOptions(): LogOptions
     {
-        return $this->hasMany(Category::class);
+        return LogOptions::defaults()
+            ->logAll()
+            ->logExcept([
+                'updated_at',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    /** @return Collection<Tag> */
+    public function categories(): Collection
+    {
+        return Tag::whereType(TagTypes::CATEGORIES)->where('institute_id', $this->id)->get();
     }
 
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function customFields(): HasMany
+    {
+        return $this->hasMany(CustomField::class);
     }
 
     public function tools(): BelongsToMany
@@ -52,41 +70,29 @@ class Institute extends Model
             ->belongsToMany(Tool::class)
             ->whereNotNull('tools.published_at')
             ->withTimestamps()
-            ->using(InstituteTool::class)
             ->withPivot([
-                'alternative_tool_id',
-                'description_1',
-                'description_1_image_filename',
-                'description_2',
-                'description_2_image_filename',
-                'extra_information_title',
-                'extra_information',
-                'support_title_1',
-                'support_email_1',
-                'support_title_2',
-                'support_email_2',
-                'manual_title_1',
-                'manual_url_1',
-                'manual_title_2',
-                'manual_url_2',
-                'video_title_1',
-                'video_url_1',
-                'video_title_2',
-                'video_url_2',
                 'status',
-                'why_unfit',
                 'published_at',
+                'updated_at',
             ]);
     }
 
-    public function toolsWithCategories(): BelongsToMany
+    public function scopeUsingTool(Builder $query, Tool $tool): Builder
     {
-        return $this->tools()->with(['categories' => fn ($categories) => $categories->forInstitute($this)]);
+        $publishedInstituteTools = InstituteTool::where('tool_id', $tool->id)
+            ->whereIn('status', [
+                InstituteToolStatus::ALLOWED,
+                InstituteToolStatus::ALLOWED_UNDER_CONDITIONS,
+            ])
+            ->whereNotNull('published_at')
+            ->pluck('institute_id');
+
+        return $query->whereIn('id', $publishedInstituteTools);
     }
 
     public function publishedToolsWithCategories(): BelongsToMany
     {
-        return $this->toolsWithCategories()->wherePivotNotNull('published_at');
+        return $this->tools()->wherePivotNotNull('published_at');
     }
 
     public function hasTool(Tool $tool): bool
@@ -94,11 +100,8 @@ class Institute extends Model
         return $this->tools()->where('tools.id', $tool->id)->exists();
     }
 
-    public function hasPublishedTool(Tool $tool): bool
+    public function getFullNameAttribute(): string
     {
-        return $this->tools()
-            ->where('tools.id', $tool->id)
-            ->wherePivotNotNull('published_at')
-            ->exists();
+        return Locale::getLocalizedFieldValue($this, 'full_name');
     }
 }

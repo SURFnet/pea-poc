@@ -14,7 +14,9 @@ return [
     'db_string' => [
         'length' => env('DB_STRING_LENGTH', 255),
     ],
-
+    'db_text' => [
+        'length' => env('DB_TEXT_LENGTH', 16777215),
+    ],
     'tool' => [
         'image' => [
             'max' => 5000,
@@ -25,8 +27,9 @@ return [
         'message' => [
             'max' => 800,
         ],
-        'rating' => [
-            'in' => [1, 2, 3, 4, 5],
-        ],
+    ],
+
+    'url' => [
+        'allowed_protocols' => ['https', 'http', 'mailto'],
     ],
 ];

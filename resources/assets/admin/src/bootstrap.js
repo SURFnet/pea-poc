@@ -6,8 +6,7 @@ import PortalVue from 'portal-vue';
 
 import * as Sentry from '@sentry/browser';
 import { Vue as VueIntegration, RewriteFrames } from '@sentry/integrations';
-import { InertiaProgress } from '@inertiajs/progress';
-import { Link } from '@inertiajs/inertia-vue';
+import { Link, router } from '@inertiajs/vue2';
 
 import { date } from '@/helpers/datetime';
 import { displayEuro } from '@/helpers/currency';
@@ -15,11 +14,10 @@ import { displayBoolean } from '@/helpers/boolean';
 import { decimal } from '@/helpers/number';
 
 /**
- * Initialize plugins and the Inertia.js progress package.
+ * Initialize plugins
  */
 Vue.use(Meta);
 Vue.use(PortalVue);
-InertiaProgress.init({ color: '#1A56DB' });
 
 /**
  * A wrapper around the trans() function, so we can be consistent between the front-end and the back-end code.
@@ -97,3 +95,8 @@ if (process.env.VUE_APP_SENTRY_LOG_ERRORS) {
         integrations: [new VueIntegration(Vue), new RewriteFrames()],
     });
 }
+
+router.on('navigate', () => {
+    // eslint-disable-next-line no-undef
+    dataLayer.push(['trackPageView']);
+});

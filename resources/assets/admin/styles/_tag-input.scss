@@ -1,0 +1,47 @@
+@import url("vue-multiselect/dist/vue-multiselect.min.css");
+
+.multiselect {
+  @apply w-11/12;
+}
+
+.multiselect__placeholder {
+  @apply text-gray-500;
+}
+
+.multiselect__tag {
+  @apply bg-blue-500;
+}
+
+.multiselect__tag-icon::after {
+  @apply text-white;
+}
+
+.multiselect__tag-icon:hover {
+  @apply bg-blue-700;
+}
+
+.multiselect__option:hover {
+  @apply bg-blue-500 text-white;
+}
+
+.multiselect__option::after {
+  @apply bg-blue-500 text-white;
+}
+
+.multiselect__option--selected {
+  @apply bg-blue-500 text-white;
+}
+
+.multiselect__option--highlight::after {
+  @apply bg-blue-500 text-white;
+}
+
+.multiselect__option--highlight {
+  @apply bg-blue-500;
+}
+
+.multiselect--active:not(.multiselect--above) .multiselect__current,
+.multiselect--active:not(.multiselect--above) .multiselect__input,
+.multiselect--active:not(.multiselect--above) .multiselect__tags {
+  @apply rounded-sm;
+}

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\External\Auth\SURF\Interfaces\Http\Controllers;
 
+use App\Actions\Institute\StopImpersonatingAction;
 use App\External\Auth\Enums\SocialiteDriver;
 use App\External\Auth\SURF\Manager;
 use App\Helpers\LoginRedirect;
@@ -25,12 +26,14 @@ class AuthController extends Controller
 
     public function callback(Manager $manager): RedirectResponse
     {
-        /** @var Provider */
+        /** @var Provider $driver */
         $driver = Socialite::driver(SocialiteDriver::SURF);
 
         $externalUser = $driver->stateless()->user();
 
         $user = $manager->createOrUpdateUser($externalUser);
+
+        (new StopImpersonatingAction())->execute($user);
 
         Auth::login($user);
 

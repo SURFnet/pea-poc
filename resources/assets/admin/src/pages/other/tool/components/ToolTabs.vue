@@ -2,7 +2,11 @@
     <div class="bg-gray-100">
         <div class="container">
             <div class="sm:hidden">
-                <label for="tabs" class="sr-only" v-text="trans('page.select-tab')" />
+                <label
+                    for="tabs"
+                    class="sr-only"
+                    v-text="trans('page.select-tab')"
+                />
 
                 <select
                     class="block w-full | focus:ring-blue-500 focus:border-blue-500 border-gray-300"
@@ -13,29 +17,35 @@
                         :key="tab"
                         :selected="tab === activeTab"
                         :value="tab"
-                        v-text="trans('page.other.tool.show.tabs.' + tab)"
+                        v-text="trans(`page.other.tool.show.tabs.${tab}`)"
                     />
                 </select>
             </div>
+
             <div class="hidden sm:block">
-                <nav class="relative flex | z-0" :aria-label="trans('aria.tabs')">
+                <nav
+                    class="relative flex | z-0"
+                    :aria-label="trans('aria.tabs')"
+                >
                     <a
                         v-for="tab in tabs"
                         :key="tab"
                         href="#"
                         :class="[
-                            tab === activeTab ? 'text-blue-500' : 'text-black hover:text-gray-700 bg-gray-300',
-                            'group relative | bg-white hover:bg-gray-300 border-l border-r border-gray-300 | text-sm font-medium text-center hover:no-underline | py-4 px-4 mr-2 | focus:z-10 overflow-hidden',
+                            tab === activeTab
+                                ? 'bg-white | text-blue-500'
+                                : 'text-black hover:text-gray-700 | bg-gray-300 hover:bg-white',
+                            'group relative | border-l border-r border-gray-300 | text-sm font-medium text-center hover:no-underline | py-4 px-4 mr-2 | focus:z-10 overflow-hidden',
                         ]"
                         :aria-current="tab === activeTab ? 'page' : undefined"
                         @click.prevent="selectTab(tab)"
                     >
-                        <span v-text="trans('page.other.tool.show.tabs.' + tab)" />
+                        <span v-text="trans(`page.other.tool.show.tabs.${tab}`)" />
 
                         <span
                             aria-hidden="true"
                             :class="[
-                                tab === activeTab ? 'bg-blue-500' : 'bg-transparent',
+                                tab === activeTab ? 'bg-blue-500' : 'bg-gray-300',
                                 'absolute inset-x-0 top-0 h-0.5',
                             ]"
                         />
@@ -53,10 +63,6 @@ export default {
             type: String,
             required: true,
         },
-        withTechnicalInfo: {
-            type: Boolean,
-            default: false,
-        },
     },
     computed: {
         /**
@@ -65,13 +71,7 @@ export default {
          * @returns {Array}
          */
         tabs() {
-            const tabs = ['description'];
-
-            if (this.withTechnicalInfo) {
-                tabs.push('technical_info');
-            }
-
-            return tabs;
+            return ['product', 'education', 'support', 'technical', 'privacy_and_security'];
         },
     },
     methods: {

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace Tests\Feature\InformationManager\Tool;
 
-use App\Models\Category;
+use App\Enums\InstituteTool\Sort;
+use App\Enums\InstituteTool\Status;
+use App\Enums\Tags\TagTypes;
+use App\Models\InstituteTool;
+use App\Models\Tag;
 use App\Models\Tool;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Auth\AuthenticationException;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
 use Tests\TestCase;
 
 class IndexTest extends TestCase
@@ -52,7 +56,7 @@ class IndexTest extends TestCase
                         'tools.data.0',
                         fn (Assert $page) => $page
                             ->where('name', $tool->name)
-                            ->where('institute.status_display', trans('institute.tool.statuses.unpublished'))
+                            ->where('institute.status_display', Status::getTranslation(Status::UNPUBLISHED))
                             ->etc()
                     )
             );
@@ -74,12 +78,7 @@ class IndexTest extends TestCase
                 fn (Assert $page) => $page
                     ->component('information-manager/tools/Index')
                     ->has('tools.data', 1)
-                    ->has(
-                        'tools.data.0',
-                        fn (Assert $page) => $page
-                            ->where('name', $tool->name)
-                            ->etc()
-                    )
+                    ->where('tools.data.0.id', $tool->id)
             );
     }
 
@@ -121,41 +120,111 @@ class IndexTest extends TestCase
                 fn (Assert $page) => $page
                     ->component('information-manager/tools/Index')
                     ->has('tools.data', 1)
-                    ->has(
-                        'tools.data.0',
-                        fn (Assert $page) => $page
-                            ->where('name', $matchedTool->name)
-                            ->etc()
-                    )
+                    ->where('tools.data.0.id', $matchedTool->id)
             );
     }
 
     /** @test */
     public function tools_can_be_filtered_by_category(): void
     {
-        $category = Category::factory()->for($this->admin->institute)->create();
+        $institute = $this->informationManager->institute;
 
         $otherTool = Tool::factory()->published()->create(['name' => 'irrelevant']);
-        $this->informationManager->institute->tools()->attach($otherTool);
+        $institute->tools()->attach($otherTool);
 
+        /** @var Tool $matchedTool */
         $matchedTool = Tool::factory()->published()->create(['name' => 'matched']);
-        $this->informationManager->institute->tools()->attach($matchedTool);
-        $category->tools()->attach($matchedTool);
+        $institute->tools()->attach($matchedTool);
+
+        $instituteTool = InstituteTool::forInstitute($institute)->forTool($matchedTool)->first();
+
+        $categoryTag = Tag::factory()
+            ->for($institute)
+            ->create([
+                'type' => TagTypes::CATEGORIES,
+            ]);
+
+        $instituteTool->syncTagsWithType([$categoryTag], TagTypes::CATEGORIES);
 
         $this
             ->actingAs($this->informationManager)
-            ->get(route('information-manager.tool.index', ['filter' => ['category' => $category->id]]))
+            ->get(route('information-manager.tool.index', ['filter' => ['category' => $categoryTag->id]]))
 
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('information-manager/tools/Index')
                     ->has('tools.data', 1)
+                    ->where('tools.data.0.id', $matchedTool->id)
+            );
+    }
+
+    /** @test */
+    public function description_is_translated(): void
+    {
+        $this->app->setLocale('nl');
+
+        $tool = Tool::factory()->published()->create([
+            'description_short_nl' => 'description-short-nl',
+        ]);
+        $this->informationManager->institute->tools()->attach($tool);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->get(route('information-manager.tool.index'))
+
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->component('information-manager/tools/Index')
                     ->has(
                         'tools.data.0',
                         fn (Assert $page) => $page
-                            ->where('name', $matchedTool->name)
+                            ->where('description_short', $tool->description_short_nl)
                             ->etc()
                     )
+            );
+    }
+
+    /** @test */
+    public function tools_can_be_sorted_by_institute_tools_updated_at_asc(): void
+    {
+        $institute = $this->informationManager->institute;
+
+        $firstTool = Tool::factory()->published()->create();
+        $institute->tools()->attach($firstTool, ['updated_at' => now()->subYear()]);
+
+        $secondTool = Tool::factory()->published()->create();
+        $institute->tools()->attach($secondTool, ['updated_at' => now()->subYear()]);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->get(route('information-manager.tool.index', ['sort' => Sort::UPDATED_AT_ASC]))
+
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->component('information-manager/tools/Index')
+                    ->where('tools.data.0.id', $firstTool->id)
+            );
+    }
+
+    /** @test */
+    public function tools_can_be_sorted_by_institute_tools_updated_at_desc(): void
+    {
+        $institute = $this->informationManager->institute;
+
+        $firstTool = Tool::factory()->published()->create();
+        $institute->tools()->attach($firstTool, ['updated_at' => now()->subYear()]);
+
+        $secondTool = Tool::factory()->published()->create();
+        $institute->tools()->attach($secondTool, ['updated_at' => now()]);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->get(route('information-manager.tool.index', ['sort' => Sort::UPDATED_AT_DESC]))
+
+            ->assertInertia(
+                fn (Assert $page) => $page
+                    ->component('information-manager/tools/Index')
+                    ->where('tools.data.0.id', $secondTool->id)
             );
     }
 }

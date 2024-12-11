@@ -1,5 +1,8 @@
 <template>
-    <img :src="logo" class="max-w-full" />
+    <img
+        :src="logo"
+        class="max-w-full"
+    />
 </template>
 
 <script>

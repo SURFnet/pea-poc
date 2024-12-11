@@ -1,11 +1,23 @@
 <template>
-    <Modal :size="size" :value="open" @close="close()">
+    <Modal
+        :size="size"
+        :value="open"
+        @close="close()"
+    >
         <div class="text-center | text-gray-900">
             <div class="sm:flex sm:items-start | px-4 p-6 pt-5">
-                <ModalIcon :icon="['fas', 'exclamation-triangle']" color="text-red-600" background="bg-red-100" />
+                <ModalIcon
+                    :icon="['fas', 'exclamation-triangle']"
+                    color="text-red-600"
+                    background="bg-red-100"
+                />
 
                 <div class="w-full | text-center sm:text-left | mt-3 sm:mt-0 sm:ml-4">
-                    <h3 v-if="dialogTitle" class="text-lg leading-6 font-medium text-gray-900" v-text="dialogTitle" />
+                    <h3
+                        v-if="dialogTitle"
+                        class="text-lg leading-6 font-medium text-gray-900"
+                        v-text="dialogTitle"
+                    />
 
                     <div class="max-h-1/4vh overflow-y-auto scrolling-touch | mt-2">
                         <p v-text="dialogText" />
@@ -14,15 +26,21 @@
             </div>
 
             <div class="flex justify-end | space-x-4">
-                <Btn type="button" variant="default-dark" @click="close()" v-text="trans('confirm.actions.cancel')" />
+                <Btn
+                    type="button"
+                    variant="default-dark"
+                    @click="close()"
+                >
+                    {{ trans('confirm.actions.cancel') }}
+                </Btn>
 
                 <Btn
                     type="submit"
                     variant="primary"
-                    :disabled="!canConfirm"
                     @click="confirm()"
-                    v-text="trans('confirm.actions.confirm')"
-                />
+                >
+                    {{ trans('confirm.actions.confirm') }}
+                </Btn>
             </div>
         </div>
     </Modal>
@@ -40,10 +58,6 @@ export default {
             type: Boolean,
             required: true,
         },
-        canConfirm: {
-            type: Boolean,
-            default: true,
-        },
         title: {
             type: String,
             default: null,
@@ -57,7 +71,6 @@ export default {
             default: 'sm',
         },
     },
-
     computed: {
         /**
          * Get the dialog title.
@@ -71,7 +84,6 @@ export default {
 
             return trans('confirm.title');
         },
-
         /**
          * Get the dialog text.
          *
@@ -85,7 +97,6 @@ export default {
             return trans('confirm.text');
         },
     },
-
     methods: {
         /**
          * Responsible for closing.
@@ -93,7 +104,6 @@ export default {
         close() {
             this.$emit('closed');
         },
-
         /**
          * Responsible for confirming.
          */

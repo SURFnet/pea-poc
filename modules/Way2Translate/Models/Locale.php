@@ -38,7 +38,7 @@ class Locale
                     $allLocales[] = $locale;
                 }
 
-                return collect($allLocales)->sortBy('name');
+                return (new Collection($allLocales))->sortBy('name');
             }
         );
     }
@@ -57,7 +57,7 @@ class Locale
     {
         $allLocales = self::get();
 
-        return $allLocales->where('code', $code)->first();
+        return (array) $allLocales->where('code', $code)->first();
     }
 
     public static function getActive(): Collection

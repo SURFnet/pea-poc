@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/** @mixin \Illuminate\Contracts\Pagination\LengthAwarePaginator */
 class PaginationResource extends JsonResource
 {
     /**

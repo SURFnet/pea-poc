@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Requests\InstituteTool;
 
 use App\Enums\InstituteTool\Status;
+use App\Models\Tool;
 use Illuminate\Validation\Rule;
 
 class UpdateRequest extends BaseRequest
@@ -18,7 +19,10 @@ class UpdateRequest extends BaseRequest
     {
         $rules = parent::rules();
 
-        if ($this->route('tool')->isPublishedForInstitute($this->user()->institute)) {
+        /** @var Tool $tool */
+        $tool = $this->route('tool');
+
+        if ($tool->isPublishedForInstitute($this->user()->institute)) {
             $rules['status'] = ['required', Rule::in(Status::toArray())];
         }
 

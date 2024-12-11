@@ -6,16 +6,31 @@
             :class="dropdownClass"
             @click="toggleMenu()"
         >
-            <span v-if="!chevronRight" class="inline-block ml-2">
-                <FontAwesomeIcon :icon="toggleChevron" class="text-sm" :class="chevronClass" />
+            <span
+                v-if="!chevronRight"
+                class="inline-block ml-2"
+            >
+                <FontAwesomeIcon
+                    :icon="toggleChevron"
+                    class="text-sm"
+                    :class="chevronClass"
+                />
             </span>
 
             <slot name="menu-header" />
 
-            <span v-if="chevronRight" class="inline-block ml-2">
-                <FontAwesomeIcon :icon="toggleChevron" class="text-sm" :class="chevronClass" />
+            <span
+                v-if="chevronRight"
+                class="inline-block ml-2"
+            >
+                <FontAwesomeIcon
+                    :icon="toggleChevron"
+                    class="text-sm"
+                    :class="chevronClass"
+                />
             </span>
         </button>
+
         <transition
             enter-active-class="ease-out duration-200"
             enter-class="opacity-0 scale-95"
@@ -123,7 +138,6 @@ export default {
         toggleMenu() {
             this.openMenu = !this.openMenu;
         },
-
         /**
          * Event for closing the dropdown when clicking outside or on a dropdown item like a link or button.
          *

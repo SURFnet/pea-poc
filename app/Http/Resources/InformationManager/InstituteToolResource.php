@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Http\Resources\InformationManager;
 
 use App\Enums\InstituteTool\Status;
-use App\Traits\Resources\WithImage;
+use App\Http\Resources\ToolResource;
+use App\Models\ConceptInstituteTool;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @extends JsonResource<\App\Models\InstituteTool> */
+/** @mixin \App\Models\ConceptInstituteTool */
 class InstituteToolResource extends JsonResource
 {
-    use WithImage;
-
     /**
      * @param \Illuminate\Http\Request $request
      *
@@ -20,47 +19,65 @@ class InstituteToolResource extends JsonResource
      */
     public function toArray($request): array
     {
+        /** @var ConceptInstituteTool $concept */
+        $concept = $this->resource;
+
+        $tool = $concept->originalVersion->tool;
+
         return [
-            'alternative_tool_id' => $this->alternative_tool_id,
+            'alternative_tools_ids' => $concept->allowedAlternativeTools()->pluck('tool_id'),
 
-            'description_1'                => $this->description_1,
-            'description_1_image_filename' => $this->description_1_image_filename,
-            'description_1_image_url'      => $this->getImageUrl($this->description_1_image_filename),
+            'prohibited_alternative_tools_tool' => ToolResource::collection($concept->prohibitedAlternativeTools),
+            'alternative_tools_tool'            => ToolResource::collection($concept->allowedAlternativeTools),
 
-            'description_2'                => $this->description_2,
-            'description_2_image_filename' => $this->description_2_image_filename,
-            'description_2_image_url'      => $this->getImageUrl($this->description_2_image_filename),
+            'categories'     => $concept->categories()->pluck('id'),
+            'status'         => $concept->status,
+            'status_display' => Status::getTranslation($concept->status ?? Status::UNRATED),
+            'conditions_en'  => $concept->conditions_en,
+            'conditions_nl'  => $concept->conditions_nl,
 
-            'extra_information_title' => $this->extra_information_title,
-            'extra_information'       => $this->extra_information,
+            'links_with_other_tools_en' => $concept->links_with_other_tools_en,
+            'links_with_other_tools_nl' => $concept->links_with_other_tools_nl,
+            'sla_url'                   => $concept->sla_url,
 
-            'support_title_1' => $this->support_title_1,
-            'support_email_1' => $this->support_email_1,
-            'support_title_2' => $this->support_title_2,
-            'support_email_2' => $this->support_email_2,
+            'privacy_contact'         => $concept->privacy_contact,
+            'privacy_evaluation_url'  => $concept->privacy_evaluation_url,
+            'security_evaluation_url' => $concept->security_evaluation_url,
+            'data_classification'     => $concept->data_classification,
 
-            'manual_title_1' => $this->manual_title_1,
-            'manual_url_1'   => $this->manual_url_1,
-            'manual_title_2' => $this->manual_title_2,
-            'manual_url_2'   => $this->manual_url_2,
+            'how_to_login_en'           => $concept->how_to_login_en,
+            'how_to_login_nl'           => $concept->how_to_login_nl,
+            'availability_en'           => $concept->availability_en,
+            'availability_nl'           => $concept->availability_nl,
+            'licensing_en'              => $concept->licensing_en,
+            'licensing_nl'              => $concept->licensing_nl,
+            'request_access_en'         => $concept->request_access_en,
+            'request_access_nl'         => $concept->request_access_nl,
+            'instructions_en'           => $concept->instructions_en,
+            'instructions_nl'           => $concept->instructions_nl,
+            'instructions_manual_1_url' => $concept->instructions_manual_1_url,
+            'instructions_manual_2_url' => $concept->instructions_manual_2_url,
+            'instructions_manual_3_url' => $concept->instructions_manual_3_url,
 
-            'video_title_1' => $this->video_title_1,
-            'video_url_1'   => $this->video_url_1,
-            'video_title_2' => $this->video_title_2,
-            'video_url_2'   => $this->video_url_2,
+            'faq_en'                     => $concept->faq_en,
+            'faq_nl'                     => $concept->faq_nl,
+            'examples_of_usage_en'       => $concept->examples_of_usage_en,
+            'examples_of_usage_nl'       => $concept->examples_of_usage_nl,
+            'additional_info_heading_en' => $concept->additional_info_heading_en,
+            'additional_info_heading_nl' => $concept->additional_info_heading_nl,
+            'additional_info_text_en'    => $concept->additional_info_text_en,
+            'additional_info_text_nl'    => $concept->additional_info_text_nl,
 
-            'status'         => $this->status,
-            'status_display' => trans('institute.tool.statuses.' . ($this->status ?? Status::UNRATED)),
+            'why_unfit_en' => $concept->why_unfit_en,
+            'why_unfit_nl' => $concept->why_unfit_nl,
 
-            'why_unfit' => $this->why_unfit,
+            'custom_fields' => CustomFieldValueResource::collection($concept->getAllCustomFields()),
 
-            'categories' => $this->institute->categories()->forTool($this->tool)->pluck('id'),
-
-            'is_published' => $this->is_published,
-            'published_at' => $this->published_at,
+            'is_published' => $concept->originalVersion->is_published,
+            'published_at' => $concept->originalVersion->published_at,
 
             'permissions' => [
-                'publish' => $request->user()->can('publishForInstitute', $this->resource->tool),
+                'publish' => $request->user()->can('publishForInstitute', $tool),
             ],
         ];
     }

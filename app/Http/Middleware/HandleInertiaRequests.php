@@ -6,12 +6,14 @@ namespace App\Http\Middleware;
 
 use App\Enums\InstituteTool\Status;
 use App\Helpers\Auth;
+use App\Http\Resources\LocaleResource;
 use App\Http\Resources\UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
 use Inertia\Middleware;
+use Modules\Way2Translate\Models\Locale;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -52,8 +54,14 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'app' => [
-                'name'  => config('app.name'),
-                'isDev' => App::environment(config('constants.environment.development')),
+                'name'          => config('app.name'),
+                'isDev'         => App::environment(config('constants.environment.development')),
+                'locale'        => config('app.locale'),
+                'activeLocales' => function () {
+                    $locales = Locale::getActive()->sortBy('native')->values();
+
+                    return LocaleResource::collection($locales);
+                },
             ],
             'flashNotifications' => function () {
                 return Session::get('flash_notification');
@@ -65,12 +73,15 @@ class HandleInertiaRequests extends Middleware
 
                 return new UserResource(Auth::user());
             },
+            'isImpersonating'  => Auth::user()?->isImpersonating(),
             'currentRouteName' => function () {
                 return Route::currentRouteName();
             },
             'instituteTool' => [
                 'legendStatuses' => Status::forLegend(),
             ],
+            'initialFilter' => $request->get('filter'),
+            'initialSort'   => $request->get('sort'),
         ]);
     }
 }

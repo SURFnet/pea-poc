@@ -13,22 +13,35 @@ parameters:
         - routes
 
     ignoreErrors:
-        # Macro support false positives
-        - '#Call to static method register\(\) on an unknown class Diglactic\\Breadcrumbs\\Breadcrumbs.#'
+        # Mixed issues
+        - '#Cannot call method (.*) on mixed.#'
+        - '#Cannot access offset (.*) on mixed.#'
+        - '#Argument of an invalid type mixed supplied for foreach, only iterables are supported.#'
+        - '#Cannot cast mixed to (.*).#'
+        - '#Cannot access property (.*) on mixed.#'
+
+        # Spatie tags model is hard type hinted but we override it
+        - '#expects Spatie\\Tags\\Tag.#'
 
         # Unexplainable false positives
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Collection\<Illuminate\\Database\\Eloquent\\Model\>|Illuminate\Database\\Eloquent\\Model::(.*)\(\).#'
-        - '#(.*) \(App\\Models\\(.*)\) does not accept Illuminate\\Database\\Eloquent\\Collection\<Illuminate\\Database\\Eloquent\\Model\>\|Illuminate\\Database\\Eloquent\\Model.#'
-        - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Factories\\Factory::(.*)\(\)#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder::(.*).#'
         - '#Call to an undefined method Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany::(.*).#'
 
         # Mockery causes issues
-        - '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(.*).#'
-        - '#Parameter (.*) expects (.*), Mockery\\LegacyMockInterface given.#'
+        - message: '#Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(.*).#'
+          paths:
+            - tests/**/*
 
-    checkMissingIterableValueType: false
+        - message: '#Parameter (.*) expects (.*), Mockery\\LegacyMockInterface given.#'
+          paths:
+            - tests/**/*
+
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
+
+
     checkUnionTypes: false
+    checkModelProperties: true
 
     universalObjectCratesClasses:
         # This can be removed once we start annotating our models, otherwise properties and methods can not be resolved properly

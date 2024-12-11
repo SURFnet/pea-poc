@@ -1,6 +1,9 @@
 <template>
     <div class="mx-auto flex items-center justify-center">
-        <nav v-if="pagination.has_pages" class="inline-flex justify-between | space-x-2">
+        <nav
+            v-if="pagination.has_pages"
+            class="inline-flex justify-between | space-x-2"
+        >
             <InertiaLink
                 :href="pagination.first_page_url || '#'"
                 class="pagination-item | text-lg"
@@ -26,8 +29,9 @@
                 class="pagination-item"
                 :preserve-scroll="preserveScroll"
                 :class="{ 'is-active': pagination.current_page == currentPage(index) }"
-                v-text="currentPage(index)"
-            />
+            >
+                {{ currentPage(index) }}
+            </InertiaLink>
 
             <InertiaLink
                 :href="pagination.next_page_url || '#'"
@@ -62,7 +66,6 @@ export default {
             default: false,
         },
     },
-
     computed: {
         /**
          * Get closest pages from the current page for a short pagination list.
@@ -84,7 +87,6 @@ export default {
 
             return [...previousPage, ...currentPage, ...nextPages];
         },
-
         /**
          * Determines if the first page link should be disabled.
          *
@@ -93,7 +95,6 @@ export default {
         disabledFirstPage() {
             return this.pagination.current_page === 1;
         },
-
         /**
          * Determines if the previous page link should be disabled.
          *
@@ -102,7 +103,6 @@ export default {
         disabledPreviousPage() {
             return this.pagination.current_page === 1;
         },
-
         /**
          * Determines if the next page link should be disabled.
          *
@@ -111,7 +111,6 @@ export default {
         disabledNextPage() {
             return this.pagination.has_more_pages === false;
         },
-
         /**
          * Determines if the last page link should be disabled.
          *
@@ -121,7 +120,6 @@ export default {
             return this.pagination.has_more_pages === false;
         },
     },
-
     methods: {
         /**
          * Get the current page number.

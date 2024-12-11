@@ -10,7 +10,9 @@ class UserWithRoles extends BaseSURFUser
 {
     public function user(): User
     {
-        $user = $this->baseUser();
+        $user = $this->baseUser([
+            'eduperson_affiliation' => ['employee'],
+        ]);
 
         return $this->mapUserToObject($user);
     }

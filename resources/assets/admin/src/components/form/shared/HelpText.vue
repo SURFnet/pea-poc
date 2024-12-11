@@ -1,5 +1,8 @@
 <template>
-    <div v-if="text" class="text-sm text-gray-500">
+    <div
+        v-if="text"
+        class="text-sm text-gray-500"
+    >
         {{ text }}
     </div>
 </template>

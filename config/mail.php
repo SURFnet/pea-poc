@@ -109,4 +109,10 @@ return [
     ],
 
     'queue_name' => env('MAIL_QUEUE_NAME', 'emails'),
+
+    'request_for_change' => [
+        'to' => 'spea@surf.nl',
+    ],
+
+    'notifications_enabled' => env('MAIL_NOTIFICATIONS_ENABLED', true),
 ];

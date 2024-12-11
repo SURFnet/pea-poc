@@ -37,7 +37,6 @@ class DbString implements Rule
     {
         Validator::extend('db_string', self::class . '@passes');
 
-        // replace the message
         $length = config('validation.db_string.length');
         Validator::replacer('db_string', function ($message) use ($length) {
             return str_replace(':length', (string) $length, $message);

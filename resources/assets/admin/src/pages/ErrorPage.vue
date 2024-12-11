@@ -1,6 +1,9 @@
 <template>
     <section class="container | py-16">
-        <p class="text-center" v-text="message" />
+        <p
+            class="text-center"
+            v-text="message"
+        />
     </section>
 </template>
 

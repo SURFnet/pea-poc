@@ -1,6 +1,9 @@
 <template>
     <nav class="space-y-1">
-        <h3 class="text-gray-900 text-lg leading-6 font-semibold" v-text="title" />
+        <h3
+            class="text-gray-900 text-lg leading-6 font-semibold"
+            v-text="title"
+        />
 
         <slot />
     </nav>

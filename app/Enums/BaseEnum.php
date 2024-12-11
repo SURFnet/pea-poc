@@ -27,4 +27,9 @@ class BaseEnum
 
         return $options;
     }
+
+    public static function getTranslation(string $option): string
+    {
+        return trans(static::$translationKey . $option);
+    }
 }

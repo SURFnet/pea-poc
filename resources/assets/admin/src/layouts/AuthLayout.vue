@@ -1,14 +1,16 @@
 <template>
-    <div
-        class="min-h-screen | bg-app | flex flex-col justify-center | font-sans text-gray-800 | antialiased | py-12 sm:px-6 lg:px-8"
-    >
+    <div class="min-h-screen | bg-app | flex flex-col justify-center | text-gray-800 | py-12 sm:px-6 lg:px-8">
         <NotificationContainer />
 
         <div class="sm:mx-auto sm:w-full sm:max-w-md">
             <BrandLogo class="mb-6" />
 
-            <!-- eslint-disable-next-line vue/no-v-html -->
-            <h1 class="text-xs text-center" v-html="trans('page.login.disclaimer')" />
+            <!-- eslint-disable vue/no-v-html -->
+            <h1
+                class="text-xs text-center"
+                v-html="trans('page.login.disclaimer')"
+            />
+            <!-- eslint-enable vue/no-v-html -->
         </div>
 
         <div class="sm:mx-auto sm:w-full sm:max-w-lg | mt-8">
@@ -17,7 +19,10 @@
             </div>
         </div>
 
-        <AuthFooter :app-name="trans('page.app-name')" class="text-xs text-center" />
+        <AuthFooter
+            :app-name="trans('page.app-name')"
+            class="text-xs text-center"
+        />
     </div>
 </template>
 

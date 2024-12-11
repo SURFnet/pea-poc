@@ -3,11 +3,15 @@
         <NotificationContainer />
 
         <header>
-            <MainMenu />
+            <MainMenu
+                :locale="$page.props.app.locale"
+                :active-locales="$page.props.app.activeLocales"
+            />
         </header>
 
         <main class="lg:flex lg:flex-row flex-grow">
-            <AdminSideBar class="lg:w-44 flex-shrink-0" />
+            <AdminSideBar class="lg:w-64 flex-shrink-0" />
+
             <slot :current-user="$page.props.currentUser" />
         </main>
 

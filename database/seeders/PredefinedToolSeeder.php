@@ -6,7 +6,6 @@ namespace Database\Seeders;
 
 use App\Enums\InstituteTool\Status;
 use App\Helpers\File;
-use App\Models\Feature;
 use App\Models\Institute;
 use App\Models\InstituteTool;
 use App\Models\Tool;
@@ -25,16 +24,13 @@ class PredefinedToolSeeder extends BaseSeeder
 
         foreach ($this->predefinedTools() as $toolName) {
             $tool = Tool::factory()->withImages()->published()->create([
-                'name'           => $toolName,
-                'image_filename' => $this->prepareToolImage($toolName),
+                'name'          => $toolName,
+                'logo_filename' => $this->prepareToolLogo($toolName),
             ]);
-
-            $tool->features()->attach(Feature::get()->random(rand(1, 4)));
 
             $factory = InstituteTool::factory()
                 ->for($institute)
                 ->for($tool)
-                ->withImages()
                 ->published();
 
             if (!empty($requiredStatuses)) {
@@ -52,7 +48,7 @@ class PredefinedToolSeeder extends BaseSeeder
         return $this->totalTools;
     }
 
-    private function prepareToolImage(string $toolName): string
+    private function prepareToolLogo(string $toolName): string
     {
         $srcFilename = Str::slug($toolName);
         $srcFile = resource_path('seeding/tools/main/' . $srcFilename . '.png');

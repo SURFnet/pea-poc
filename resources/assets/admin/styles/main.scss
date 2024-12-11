@@ -13,7 +13,6 @@
  */
 @import 'generic/base';
 @import 'generic/page';
-@import 'generic/heading';
 @import 'generic/content';
 @import 'generic/container';
 @import 'generic/text';
@@ -29,6 +28,9 @@
 @import 'pagination';
 @import 'mark';
 @import 'bottom-heavy-border';
+@import 'tiptap';
+@import 'tag-input';
+@import 'information-box';
 
 /*
  * # Utilities

@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Tests\Feature\Account;
 
 use App\Http\Middleware\VerifyCsrfToken;
-use Inertia\Testing\Assert;
+use Inertia\Testing\AssertableInertia as Assert;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
@@ -30,6 +31,18 @@ class LoginTest extends TestCase
             ->post(route('account.login-as-super-admin'));
 
         $this->assertAuthenticated();
+    }
+
+    /** @test */
+    public function upon_login_the_locale_is_applied(): void
+    {
+        $this->admin->language = 'nl';
+        $this->admin->save();
+
+        $this
+            ->post(route('account.login-as-super-admin'))
+
+            ->assertRedirect(LaravelLocalization::localizeUrl(route('home.index'), 'nl'));
     }
 
     /** @test */

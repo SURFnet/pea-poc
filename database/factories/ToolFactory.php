@@ -4,22 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\Tool\AuthenticationMethod;
-use App\Enums\Tool\StoredData;
-use App\Enums\Tool\SupportedStandard;
+use App\Helpers\Country;
+use App\Helpers\File;
 use App\Models\Tool;
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Illuminate\Support\Facades\Storage;
 
+/** @extends Factory<\App\Models\Tool> */
 class ToolFactory extends Factory
 {
-    /** @var string */
-    protected $model = Tool::class;
-
     public function definition(): array
     {
-        $storedData = $this->faker->randomElements(StoredData::toArray(), rand(1, 2));
-        $otherStoredData = null;
         $createdAt = $this->faker->dateTimeBetween('-3 months', '-2 hours');
         $updatedAt = $createdAt;
         $publishedAt = null;
@@ -32,34 +26,47 @@ class ToolFactory extends Factory
             $publishedAt = $this->faker->dateTimeBetween($createdAt, 'now');
         }
 
-        if (in_array(StoredData::OTHER, $storedData)) {
-            $otherStoredData = $this->faker->text(40);
-        }
-
         return [
-            'name'              => $this->faker->unique()->sentence(rand(2, 4)),
-            'description_short' => $this->faker->text(),
-            'image_filename'    => null,
+            'name'                                => $this->faker->unique()->sentence(rand(2, 4)),
+            'supplier'                            => $this->faker->text(),
+            'supplier_url'                        => $this->faker->url(),
+            'description_short_en'                => $this->faker->text(),
+            'description_short_nl'                => $this->faker->text(),
+            'addons_en'                           => $this->faker->text(),
+            'addons_nl'                           => $this->faker->text(),
+            'system_requirements_en'              => $this->faker->text(),
+            'system_requirements_nl'              => $this->faker->text(),
+            'supplier_country'                    => $this->faker->optional()->randomElement(Country::getCodes()),
+            'personal_data_en'                    => $this->faker->text(),
+            'personal_data_nl'                    => $this->faker->text(),
+            'privacy_policy_url'                  => $this->faker->url(),
+            'model_processor_agreement_url'       => $this->faker->url(),
+            'privacy_analysis'                    => $this->faker->text(),
+            'supplier_agrees_with_surf_standards' => $this->faker->boolean(),
+            'dtia_by_external_url'                => $this->faker->url(),
+            'dpia_by_external_url'                => $this->faker->url(),
+            'jurisdiction'                        => $this->faker->text(),
+            'instructions_manual_1_url_en'        => $this->faker->url(),
+            'instructions_manual_1_url_nl'        => $this->faker->url(),
+            'instructions_manual_2_url_en'        => $this->faker->url(),
+            'instructions_manual_2_url_nl'        => $this->faker->url(),
+            'instructions_manual_3_url_en'        => $this->faker->url(),
+            'instructions_manual_3_url_nl'        => $this->faker->url(),
+            'support_for_teachers_en'             => $this->faker->text(),
+            'support_for_teachers_nl'             => $this->faker->text(),
+            'availability_surf'                   => $this->faker->text(),
+            'accessibility_facilities_en'         => $this->faker->text(),
+            'accessibility_facilities_nl'         => $this->faker->text(),
+            'description_long_en'                 => $this->faker->text(),
+            'description_long_nl'                 => $this->faker->text(),
+            'use_for_education_en'                => $this->faker->text(),
+            'use_for_education_nl'                => $this->faker->text(),
+            'how_does_it_work_en'                 => $this->faker->text(),
+            'how_does_it_work_nl'                 => $this->faker->text(),
 
-            'description_long_1'           => $this->faker->optional()->text(),
-            'description_1_image_filename' => null,
-
-            'description_long_2'           => $this->faker->optional()->text(),
-            'description_2_image_filename' => null,
-
-            'info_url' => $this->faker->optional()->url(),
-
-            'supported_standards'  => $this->faker->randomElements(SupportedStandard::toArray(), rand(1, 3)),
-            'additional_standards' => $this->faker->text(40),
-
-            'authentication_methods' => $this->faker->randomElements(AuthenticationMethod::toArray(), rand(1, 2)),
-
-            'stored_data'       => $storedData,
-            'other_stored_data' => $otherStoredData,
-
-            'european_data_storage'           => $this->faker->boolean(),
-            'surf_standards_framework_agreed' => $this->faker->boolean(),
-            'has_processing_agreement'        => $this->faker->boolean(),
+            'logo_filename'    => null,
+            'image_1_filename' => null,
+            'image_2_filename' => null,
 
             'published_at' => $publishedAt,
 
@@ -78,20 +85,14 @@ class ToolFactory extends Factory
     public function withImages(): Factory
     {
         return $this->state(fn () => [
-            'image_filename' => function (): string {
-                $file = $this->faker->file(resource_path('seeding/tools/main'));
-
-                return basename(Storage::putFile(Tool::$disk, $file));
+            'logo_filename' => function (): string {
+                return File::storeFromPath($this->faker->file(resource_path('seeding/tools/main')), Tool::$disk);
             },
-            'description_1_image_filename' => function (): string {
-                $file = $this->faker->file(resource_path('seeding/tools/description'));
-
-                return basename(Storage::putFile(Tool::$disk, $file));
+            'image_1_filename' => function (): string {
+                return File::storeFromPath($this->faker->file(resource_path('seeding/tools/description')), Tool::$disk);
             },
-            'description_2_image_filename' => function (): string {
-                $file = $this->faker->file(resource_path('seeding/tools/description'));
-
-                return basename(Storage::putFile(Tool::$disk, $file));
+            'image_2_filename' => function (): string {
+                return File::storeFromPath($this->faker->file(resource_path('seeding/tools/description')), Tool::$disk);
             },
         ]);
     }

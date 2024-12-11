@@ -1,31 +1,50 @@
 <template>
-    <BaseModal :value="open" @close="close">
+    <BaseModal
+        :value="open"
+        @close="close"
+    >
         <template #title>
-            <h3 class="text-xl font-medium text-gray-900 | mb-4" v-text="trans('modal.share_experience.title')" />
+            <h3
+                class="text-xl font-medium text-gray-900 | mb-4"
+                v-text="trans('modal.share_experience.title')"
+            />
         </template>
 
-        <form class="space-y-6" @submit.prevent="submit">
+        <form
+            class="space-y-6"
+            @submit.prevent="submit"
+        >
             <ExperienceForm :form.sync="form" />
 
-            <FormFooter align="end" class="mt-6">
+            <FormFooter
+                align="end"
+                class="mt-6"
+            >
                 <Btn
                     type="button"
                     variant="default"
                     @click="close"
-                    v-text="trans('modal.share_experience.actions.cancel')"
-                />
+                >
+                    {{ trans('modal.share_experience.actions.cancel') }}
+                </Btn>
 
-                <Btn type="submit" variant="primary" v-text="trans('modal.share_experience.actions.share')" />
+                <Btn
+                    type="submit"
+                    variant="primary"
+                >
+                    {{ trans('modal.share_experience.actions.share') }}
+                </Btn>
             </FormFooter>
         </form>
     </BaseModal>
 </template>
 
 <script>
+import { useForm } from '@inertiajs/vue2';
+
 import BaseModal from '@/components/BaseModal';
 import FormFooter from '@/components/FormFooter';
 import Btn from '@/components/Btn';
-
 import ExperienceForm from '@/components/modal/components/ExperienceForm';
 
 export default {
@@ -52,8 +71,7 @@ export default {
      */
     data() {
         return {
-            form: this.$inertia.form({
-                rating: 0,
+            form: useForm({
                 title: null,
                 message: null,
             }),
@@ -64,7 +82,6 @@ export default {
          * Responsible for closing.
          */
         close() {
-            this.form.rating = 0;
             this.form.title = null;
             this.form.message = null;
 

@@ -10,10 +10,20 @@
         <div class="mt-5 flex lg:mt-0 lg:ml-4 | space-x-4">
             <slot />
 
-            <BaseDropdown v-if="$slots.more" position="right">
+            <BaseDropdown
+                v-if="$slots.more"
+                position="right"
+            >
                 <template #button-content="{ isOpen, toggle }">
-                    <button :class="{ 'is-active': isOpen }" @click="toggle">
-                        <font-awesome-icon icon="ellipsis-h" size="xs" fixed-width />
+                    <button
+                        :class="{ 'is-active': isOpen }"
+                        @click="toggle"
+                    >
+                        <FontAwesomeIcon
+                            icon="ellipsis-h"
+                            size="xs"
+                            fixed-width
+                        />
                     </button>
                 </template>
 

@@ -1,3 +1,85 @@
-.font-tabular-nums {
-    font-variant-numeric: tabular-nums;
+@font-face {
+    font-family: 'Nunito';
+    src: url('/dist/admin/fonts/Nunito/Nunito-VariableFont_wght.ttf') format('truetype-variations');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Nunito';
+    src: url("/dist/admin/fonts/Nunito/Nunito-Italic-VariableFont_wght.ttf") format('truetype-variations');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-ExtraLight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-ExtraLightItalic.ttf') format('truetype');
+    font-weight: 200;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-LightItalic.ttf') format('truetype');
+    font-weight: 300;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-Regular.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-Italic.ttf') format('truetype');
+    font-weight: 400;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-Bold.ttf') format('truetype');
+    font-weight: 700;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Source Sans Pro';
+    src: url('/dist/admin/fonts/SourceSansPro/SourceSansPro-BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
 }

@@ -22,6 +22,40 @@ class JsGenerator
         $this->file = App::get('files');
     }
 
+    public static function fromFileOrDatabase(): string
+    {
+        $filePath = config('way2translate.js-translations.path-absolute');
+        if (file_exists($filePath)) {
+            return file_get_contents($filePath);
+        }
+
+        return (new self())->content();
+    }
+
+    public function content(): string
+    {
+        $messages = $this->getMessagesFromDatabase();
+
+        $target = config('way2translate.js-translations.path-absolute');
+        $this->prepareTarget($target);
+
+        $template = $this->file->get(__DIR__ . '/Templates/langjs-with-messages.js');
+
+        $langjs = '';
+        if (config('way2translate.js-translations.include-lang-js')) {
+            $langjs = $this->file->get(__DIR__ . '/Lib/lang.min.js');
+        }
+
+        $template = str_replace('\'{ langjs }\';', $langjs, $template);
+        $template = str_replace('\'{ messages }\'', json_encode($messages), $template);
+
+        if (config('way2translate.js-translations.minify-js')) {
+            $template = Minifier::minify($template);
+        }
+
+        return $template;
+    }
+
     public function generate(bool $fromDatabase = true): int
     {
         if ($fromDatabase) {
@@ -93,7 +127,7 @@ class JsGenerator
         foreach ($folders as $namespace => $folder) {
             $path = $folder . DIRECTORY_SEPARATOR . $locale;
             if (!$this->file->exists($path)) {
-                throw new Exception($path . 'does not exists!');
+                throw new Exception($path . ' does not exist!');
             }
 
             foreach ($this->file->allFiles($path) as $file) {

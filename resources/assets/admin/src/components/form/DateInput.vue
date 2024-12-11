@@ -1,6 +1,10 @@
 <template>
     <div>
-        <InputLabel v-if="label" :for="id" :required="required">
+        <InputLabel
+            v-if="label"
+            :for="id"
+            :required="required"
+        >
             {{ label }}
         </InputLabel>
 
@@ -19,13 +23,22 @@
             @input="updateValue"
         />
 
-        <InvalidFeedback v-if="error" :error="error" class="mt-2" />
+        <InvalidFeedback
+            v-if="error"
+            :error="error"
+            class="mt-2"
+        />
 
-        <HelpText :text="text" class="mt-2" />
+        <HelpText
+            :text="text"
+            class="mt-2"
+        />
     </div>
 </template>
 
 <script>
+import uniqueId from 'lodash/uniqueId';
+
 import DatePicker from 'vue2-datepicker';
 import 'vue2-datepicker/index.css';
 import 'vue2-datepicker/locale/en';
@@ -53,13 +66,8 @@ export default {
              * @returns {string}
              */
             default() {
-                // eslint-disable-next-line
-                return `text-input-${this._uid}`;
+                return `text-input-${uniqueId()}`;
             },
-        },
-        type: {
-            type: String,
-            default: 'text',
         },
         value: {
             type: String,
@@ -101,19 +109,12 @@ export default {
          */
         inputClass() {
             return {
-                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500': this
-                    .error,
+                'border-red-300 text-red-900 placeholder-red-300 focus:outline-none focus:ring-red-500 focus:border-red-500':
+                    this.error,
             };
         },
     },
     methods: {
-        /**
-         * Focuses the input.
-         */
-        focus() {
-            this.$refs.input.focus();
-        },
-
         /**
          * Update with the the chosen date.
          *

@@ -8,28 +8,29 @@ use App\Helpers\Format;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class Experience extends Model
 {
     use HasFactory, LogsActivity;
 
-    /** @var array */
+    /** @var array<int, string> */
     protected $fillable = [
-        'rating',
         'title',
         'message',
     ];
 
-    protected static array $logAttributes = ['*'];
-
-    protected static array $logAttributesToIgnore = [
-        'updated_at',
-    ];
-
-    protected static bool $logOnlyDirty = true;
-
-    protected static bool $submitEmptyLogs = false;
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logAll()
+            ->logExcept([
+                'updated_at',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function user(): BelongsTo
     {
@@ -43,6 +44,6 @@ class Experience extends Model
 
     public function getMessageDisplayAttribute(): string
     {
-        return Format::stripTagsAndConvertNewlineToHtml($this->message);
+        return Format::asSimpleHtml($this->message);
     }
 }

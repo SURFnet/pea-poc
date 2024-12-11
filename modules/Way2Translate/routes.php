@@ -2,8 +2,12 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 use Modules\Way2Translate\Controllers\TranslationsController;
+use Modules\Way2Translate\Generators\JsGenerator;
+use Modules\Way2Translate\Helpers\Route as RouteHelper;
 
 Route::group(
     [
@@ -47,5 +51,32 @@ Route::group(
                     ->name('save');
             }
         );
+    }
+);
+Route::group(
+    [
+        'prefix' => 'way2translate',
+        'as'     => 'way2translate.',
+    ],
+    function (): void {
+        Route::get('lang', function () {
+            if (App::environment('local')) {
+                $lang = JsGenerator::fromFileOrDatabase();
+            } else {
+                $lang = Cache::remember(
+                    RouteHelper::getCacheKey(),
+                    60000,
+                    function () {
+                        return (new JsGenerator())->content();
+                    }
+                );
+            }
+
+            $response = response($lang, 200);
+            $response->header('Content-Type', 'application/javascript');
+
+            return $response;
+        })
+            ->name('lang');
     }
 );

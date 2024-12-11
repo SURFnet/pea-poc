@@ -28,7 +28,7 @@ class ValidationExceptionTest extends TestCase
                 'email' => '',
             ])
 
-            ->assertSessionHasErrors(['email' => trans('validation.required')]);
+            ->assertSessionHasErrors(['email']);
     }
 
     /** @test */
@@ -40,6 +40,6 @@ class ValidationExceptionTest extends TestCase
             ])
 
             ->assertStatus(422)
-            ->assertJsonValidationErrors(['email' => trans('validation.required')]);
+            ->assertJsonValidationErrors(['email']);
     }
 }

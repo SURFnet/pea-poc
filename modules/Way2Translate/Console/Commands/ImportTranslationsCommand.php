@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Way2Translate\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Contracts\Console\Isolatable;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\File;
 use Modules\Way2Translate\Models\Language;
@@ -17,7 +18,7 @@ use Modules\Way2Translate\Models\Translation;
  * Heavily inspired by:
  * https://github.com/hpolthof/laravel-translations-db/blob/master/src/Console/Commands/FetchCommand.php
  */
-class ImportTranslationsCommand extends Command
+class ImportTranslationsCommand extends Command implements Isolatable
 {
     /** @var string */
     protected $signature = 'w2w:import-translations';
