@@ -51,7 +51,9 @@ jobs:
         run: . ~/.nvm/nvm.sh && nvm install 20
 
       - name: Install pnpm
-        run: curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=8.15.8 /bin/bash -
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Syntax Errors
         run: find app database tests config routes -name "*.php" -print0 | xargs -0 -n1 -P8 php -l
@@ -119,7 +121,9 @@ jobs:
         run: . ~/.nvm/nvm.sh && nvm install 20
 
       - name: Install pnpm
-        run: curl -fsSL https://get.pnpm.io/install.sh | env PNPM_VERSION=8.15.8 /bin/bash -
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
 
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
