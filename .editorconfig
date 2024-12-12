@@ -1,4 +1,4 @@
-# Way2Edit config file
+# PAQT config file
 
 root = true
 
@@ -15,3 +15,8 @@ trim_trailing_whitespace = false
 
 [*.{yml,yaml}]
 indent_size = 2
+quote_type = single
+
+[*{Makefile,makefile,.mk}]
+indent_style = tab
+tab_width = 4
