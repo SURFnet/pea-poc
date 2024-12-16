@@ -109,6 +109,19 @@ jobs:
           sudo systemctl start mysql
           mysql --user="root" --password="root" -e "CREATE DATABASE tests_db character set UTF8mb4 collate utf8mb4_bin;"
 
+      - name: Setup minio
+        run: |
+          docker run -d -p 9000:9000 --name minio \
+                     -e "MINIO_ACCESS_KEY=application" \
+                     -e "MINIO_SECRET_KEY=password" \
+                     -v /tmp/data:/data \
+                     -v /tmp/config:/root/.minio \
+                     minio/minio server /data
+          export AWS_ACCESS_KEY_ID=application
+          export AWS_SECRET_ACCESS_KEY=password
+          export AWS_EC2_METADATA_DISABLED=true
+          aws --endpoint-url http://127.0.0.1:9000/ s3 mb s3://sreapp-public
+
       - name: Set Up PHP and Tools
         uses: shivammathur/setup-php@master
         with:
@@ -134,15 +147,7 @@ jobs:
       - name: Build Assets
         run: ./buildHook.sh $PWD
 
-      - name: Run PHPUnit Tests
-        run: composer test
-        env:
-          DB_HOST: localhost
-          DB_DATABASE: tests_db
-          DB_USERNAME: root
-          DB_PASSWORD: root
-
-      - name: Run Test Coverage Report
+      - name: Run Test & Coverage Report
         run: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
         env:
           DB_HOST: localhost
