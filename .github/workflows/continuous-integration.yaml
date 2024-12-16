@@ -148,7 +148,7 @@ jobs:
         run: ./buildHook.sh $PWD
 
       - name: Run Test & Coverage Report
-        run: ./vendor/bin/phpunit --coverage-clover ./coverage.xml
+        run: composer test-coverage-xml
         env:
           DB_HOST: localhost
           DB_DATABASE: tests_db
