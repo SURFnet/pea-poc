@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\Tool;
+use App\Observers\ToolObserver;
 use Barryvdh\Debugbar\Facade as Debugbar;
 use Carbon\Carbon;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -21,6 +23,7 @@ class AppServiceProvider extends ServiceProvider
         Schema::defaultStringLength(255);
 
         $this->registerBladeComponents();
+        $this->registerObservers();
     }
 
     public function register(): void
@@ -40,5 +43,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Blade::aliasComponent('components.attribute-list.wrapper', 'attributelist');
         Blade::aliasComponent('components.attribute-list.item', 'attribute');
+    }
+
+    private function registerObservers(): void
+    {
+        Tool::observe(ToolObserver::class);
     }
 }

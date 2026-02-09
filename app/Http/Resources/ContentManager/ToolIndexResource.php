@@ -23,7 +23,8 @@ class ToolIndexResource extends BaseToolIndexResource
         return [
             ...$this->getToolData($concept ?? $tool),
 
-            'id' => $tool->id,
+            'slug' => $tool->slug,
+            'id'   => $tool->id,
 
             'status'         => $tool->status,
             'status_display' => $tool->status_display,
@@ -32,8 +33,12 @@ class ToolIndexResource extends BaseToolIndexResource
 
             'has_concept' => $concept !== null,
 
+            'is_custom' => $tool->institute_id !== null,
+
             'permissions' => [
-                'update' => $request->user()->can('update', $tool),
+                'update'           => $request->user()->can('update', $tool),
+                'view_custom_tool' => $request->user()->can('view', $tool),
+                'convert'          => $request->user()->can('convert', $tool),
             ],
         ];
     }

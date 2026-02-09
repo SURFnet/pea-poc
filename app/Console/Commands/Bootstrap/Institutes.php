@@ -56,6 +56,8 @@ class Institutes extends Command
 
     private function updateInstitute(array $bootstrapInstitute): void
     {
+        $this->info('- Updating institute ' . $bootstrapInstitute['full_name_nl']);
+
         $institute = Institute::where('domain', $bootstrapInstitute['domain'])->first();
 
         // Get current set of pictures
@@ -90,6 +92,8 @@ class Institutes extends Command
 
     private function createNewInstitute(array $bootstrapInstitute): void
     {
+        $this->info('- Creating new institute ' . $bootstrapInstitute['full_name_nl']);
+
         $logoPath = resource_path('seeding/institutes/full/' . $bootstrapInstitute['logo']);
         $bannerPath = resource_path('seeding/institutes/banner/' . $bootstrapInstitute['banner']);
 

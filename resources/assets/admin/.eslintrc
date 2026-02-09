@@ -224,7 +224,7 @@
     "settings": {
         "import/resolver": {
             "webpack": {
-                "config": "./node_modules/laravel-mix/setup/webpack.config.js"
+                "config": "./webpack.config.js"
             },
             "alias": {
                 "map": [

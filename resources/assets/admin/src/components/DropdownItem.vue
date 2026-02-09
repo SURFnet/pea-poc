@@ -6,6 +6,7 @@
         preserve-scroll
         :rel="rel"
         :target="target"
+        @click="handleClick"
     >
         <slot />
     </component>
@@ -27,6 +28,10 @@ export default {
             type: Boolean,
             default: false,
         },
+        asButton: {
+            type: Boolean,
+            default: false,
+        },
     },
     computed: {
         /**
@@ -37,6 +42,10 @@ export default {
         componentType() {
             if (this.external === true) {
                 return 'a';
+            }
+
+            if (this.asButton === true) {
+                return 'button';
             }
 
             return 'InertiaLink';
@@ -77,6 +86,14 @@ export default {
          */
         target() {
             return this.external ? '_bank' : '';
+        },
+    },
+    methods: {
+        /**
+         *  Handles click
+         */
+        handleClick() {
+            this.$emit('click');
         },
     },
 };

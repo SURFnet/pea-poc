@@ -2,7 +2,7 @@
     <div>
         <h2
             class="mb-4 | text-2xl leading-6 text-slate-600 italic"
-            v-text="trans('page.our.tool.show.content_manager_filled_out')"
+            v-text="toolInformationTitle"
         />
 
         <FormGroup :title="trans('page.content-manager.tool.form.headings.product')">
@@ -288,6 +288,24 @@ export default {
         tool: {
             type: Object,
             required: true,
+        },
+        text: {
+            type: String,
+            default: null,
+        },
+    },
+    computed: {
+        /**
+         * Tool information title
+         *
+         * @returns {string}
+         */
+        toolInformationTitle() {
+            if (this.text) {
+                return this.text;
+            }
+
+            return trans('page.our.tool.show.content_manager_filled_out');
         },
     },
 };

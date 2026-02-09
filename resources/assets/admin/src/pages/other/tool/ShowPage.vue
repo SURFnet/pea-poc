@@ -78,6 +78,8 @@
                             :image="institute.logo_square_url"
                         />
                     </div>
+
+                    <ShareLinkButton :link="tool.share_url" />
                 </div>
             </div>
         </div>
@@ -97,6 +99,7 @@ import PrivacyAndSecurityTab from '@/pages/other/tool/components/tabs/PrivacyAnd
 import SupportTab from '@/pages/other/tool/components/tabs/SupportTab.vue';
 import EducationTab from '@/pages/other/tool/components/tabs/EducationTab.vue';
 import TagPill from '@/components/TagPill.vue';
+import ShareLinkButton from '@/components/ShareLinkButton.vue';
 import { getFilterUrlByTag } from '@/helpers/tool-filter-url';
 
 export default {
@@ -109,6 +112,7 @@ export default {
         ToolTabs,
         InstituteBox,
         ProductTab,
+        ShareLinkButton,
         TechnicalTab,
     },
     layout: Layout,

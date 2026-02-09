@@ -48,6 +48,11 @@
                                             v-model="localFilter[column.filterKey]"
                                             :options="column.filterOptions"
                                         />
+
+                                        <th
+                                            v-else
+                                            :key="column.filterKey"
+                                        />
                                     </template>
                                 </tr>
                             </thead>

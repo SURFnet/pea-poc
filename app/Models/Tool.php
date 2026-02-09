@@ -8,12 +8,14 @@ use App\Actions\Tool\Concept\CreateAction as CreateConceptAction;
 use App\Enums\InstituteTool\Status as InstituteToolStatus;
 use App\Enums\Tags\TagTypes;
 use App\Enums\Tool\Status;
+use App\Traits\Models\HasSlug;
 use App\Traits\Models\SearchesLocalizedFields;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -30,10 +32,12 @@ use Spatie\Tags\HasTags;
  */
 class Tool extends Model
 {
-    use HasFactory, LogsActivity, SearchesLocalizedFields, HasTags;
+    use HasFactory, LogsActivity, SearchesLocalizedFields, HasTags, HasSlug;
 
     /** @var array<int, string> */
     protected $fillable = [
+        'institute_id',
+
         'name',
         'supplier',
         'supplier_url',
@@ -204,6 +208,11 @@ class Tool extends Model
             ]);
     }
 
+    public function institute(): BelongsTo
+    {
+        return $this->belongsTo(Institute::class);
+    }
+
     public function instituteTools(): HasMany
     {
         return $this->hasMany(InstituteTool::class);
@@ -312,6 +321,13 @@ class Tool extends Model
         }
     }
 
+    public function scopeCustom(Builder $query, bool $value): void
+    {
+        $value === true
+            ? $query->whereNotNull('tools.institute_id')
+            : $query->whereNull('tools.institute_id');
+    }
+
     public function getStatusAttribute(): string
     {
         return $this->published_at ? Status::PUBLISHED : Status::CONCEPT;
@@ -385,6 +401,10 @@ class Tool extends Model
                 ->whereNotNull('institute_tool.published_at');
         })
         ->whereNotNull('tools.published_at')
+        ->where(function (Builder $query) use ($institute): void {
+            $query->where('tools.institute_id', $institute->id)
+                ->orWhereNull('tools.institute_id');
+        })
         ->orderByRaw("FIELD(IFNULL(institute_tool.status, '-'), $statuses, '-'), ISNULL(institute_tool.id)")
         ->orderBy('name');
 
@@ -402,5 +422,10 @@ class Tool extends Model
     public static function getTagClassName(): string
     {
         return Tag::class;
+    }
+
+    public function isCustomTool(): bool
+    {
+        return $this->institute_id !== null;
     }
 }

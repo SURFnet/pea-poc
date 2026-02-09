@@ -7,6 +7,7 @@ namespace App\Models;
 use App\Actions\Institute\Tool\Concept\CreateAction as CreateConceptAction;
 use App\Enums\InstituteTool\Status;
 use App\Enums\Tags\TagTypes;
+use App\Traits\Models\HasSlug;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ use Spatie\Tags\HasTags;
 
 class InstituteTool extends Model
 {
-    use HasFactory, HasTags;
+    use HasFactory, HasTags, HasSlug;
 
     /** @var bool */
     public $incrementing = true;

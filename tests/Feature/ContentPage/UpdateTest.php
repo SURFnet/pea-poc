@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\ContentPage;
+namespace Tests\Feature\ContentPage;
 
 use App\Models\ContentPage;
 use Illuminate\Auth\AuthenticationException;

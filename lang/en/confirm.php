@@ -11,6 +11,8 @@ return [
         'cancel'  => 'Cancel',
     ],
 
+    'convert-to-generic' => 'Are you sure you want to convert ":item" to a generic tool and publish it?',
+
     'delete-entity' => 'Are you sure you want to delete ":entity"?',
 
     'publish-tool'   => 'Are you sure you wish to publish this tool for your institute?',

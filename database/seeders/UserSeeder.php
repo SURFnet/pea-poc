@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
+use App\Enums\Auth\Role;
 use App\Models\Institute;
 use App\Models\User;
 
@@ -22,6 +23,16 @@ class UserSeeder extends BaseSeeder
 
             $this->advanceProgressBar();
         });
+
+        foreach (Role::toArray() as $role) {
+            $this->command->info("Creating a user with role:$role");
+
+            User::factory()->create([
+                'name'         => "PAQT $role",
+                'roles'        => [$role],
+                'institute_id' => Institute::first(),
+            ]);
+        }
     }
 
     protected function getProgressBarCount(): int

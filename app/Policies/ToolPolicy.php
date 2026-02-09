@@ -10,7 +10,10 @@ use App\Models\InstituteTool;
 use App\Models\Tool;
 use App\Models\User;
 
-/** @SuppressWarnings(PHPMD.TooManyPublicMethods) */
+/**
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ */
 class ToolPolicy
 {
     public function viewAll(User $currentUser): bool
@@ -36,33 +39,79 @@ class ToolPolicy
         return $tool->isPublishedForInstitute($currentUser->institute);
     }
 
+    public function view(User $currentUser, Tool $tool): bool
+    {
+        // Currently only viewing Custom Tools is supported
+        if (!$tool->isCustomTool()) {
+            return false;
+        }
+
+        if ($currentUser->isContentManager()) {
+            return true;
+        }
+
+        return $currentUser->isInformationManager()
+            && $currentUser->institute->hasCustomTool($tool);
+    }
+
     public function create(User $currentUser): bool
     {
         return $currentUser->isContentManager();
     }
 
-    /** @SuppressWarnings(PHPMD.UnusedFormalParameter) */
+    public function createCustomTool(User $currentUser): bool
+    {
+        return $currentUser->isInformationManager();
+    }
+
     public function update(User $currentUser, Tool $tool): bool
     {
+        if ($tool->isCustomTool()) {
+            return $currentUser->isInformationManager()
+                && $currentUser->institute->hasCustomTool($tool);
+        }
+
         return $currentUser->isContentManager();
+    }
+
+    public function delete(User $currentUser, Tool $tool): bool
+    {
+        if (!$tool->isCustomTool()) {
+            return false;
+        }
+
+        return $currentUser->isInformationManager();
     }
 
     public function publish(User $currentUser, Tool $tool): bool
     {
-        return !$tool->is_published && $currentUser->isContentManager();
+        if ($tool->is_published) {
+            return false;
+        }
+
+        if ($tool->isCustomTool()) {
+            return $currentUser->isInformationManager()
+                && $currentUser->institute->hasCustomTool($tool);
+        }
+
+        return $currentUser->isContentManager();
     }
 
     public function publishConcept(User $currentUser, Tool $tool): bool
     {
-        if (!$this->update($currentUser, $tool)) {
+        if ($tool->concept === null) {
             return false;
         }
 
-        return $tool->concept !== null;
+        return $this->update($currentUser, $tool);
     }
 
     public function discardConcept(User $currentUser, Tool $tool): bool
     {
+        if ($tool->isCustomTool()) {
+            return false;
+        }
+
         return $this->publishConcept($currentUser, $tool);
     }
 
@@ -73,6 +122,10 @@ class ToolPolicy
 
     public function addToInstitute(User $currentUser, Tool $tool): bool
     {
+        if ($tool->isCustomTool()) {
+            return false;
+        }
+
         return $tool->is_published
             && $currentUser->isInformationManager()
             && !$currentUser->institute->hasTool($tool);
@@ -80,6 +133,10 @@ class ToolPolicy
 
     public function updateForInstitute(User $currentUser, Tool $tool): bool
     {
+        if ($tool->isCustomTool()) {
+            return false;
+        }
+
         return $tool->is_published
             && $currentUser->isInformationManager()
             && $currentUser->institute->hasTool($tool);
@@ -87,23 +144,38 @@ class ToolPolicy
 
     public function publishForInstitute(User $currentUser, Tool $tool): bool
     {
-        return $tool->is_published
-            && $currentUser->isInformationManager()
-            && $currentUser->institute->hasTool($tool);
+        if (!$tool->is_published || !$currentUser->isInformationManager()) {
+            return false;
+        }
+
+        if ($tool->isCustomTool()) {
+            return $currentUser->institute->hasCustomTool($tool);
+        }
+
+        return $currentUser->institute->hasTool($tool);
     }
 
-    public function publishConceptForInstitute(User $currentUser, Tool $tool): bool
+    public function publishConceptForInstitute(User $currentUser, Tool $tool, InstituteTool $instituteTool = null): bool
     {
-        if (!$currentUser->isInformationManager() || !$currentUser->institute->hasTool($tool)) {
+        if (!$currentUser->isInformationManager()) {
             return false;
         }
 
-        $instituteTool = InstituteTool::forInstitute($currentUser->institute)->forTool($tool)->first();
-        if ($instituteTool?->concept === null) {
+        if ($instituteTool === null) {
+            $instituteTool = InstituteTool::forInstitute($currentUser->institute)
+                ->forTool($tool)
+                ->first();
+        }
+
+        if ($instituteTool->concept === null) {
             return false;
         }
 
-        return true;
+        if ($tool->isCustomTool()) {
+            return $currentUser->institute->hasCustomTool($tool);
+        }
+
+        return $currentUser->institute->hasTool($tool);
     }
 
     public function discardConceptForInstitute(User $currentUser, Tool $tool): bool
@@ -124,11 +196,20 @@ class ToolPolicy
 
     public function submitRequestForChange(User $currentUser, Tool $tool): bool
     {
-        if (!$tool->is_published) {
+        if (!$tool->is_published || $tool->isCustomTool()) {
             return false;
         }
 
         return $currentUser->isInformationManager();
+    }
+
+    public function convert(User $currentUser, Tool $tool): bool
+    {
+        if (!$tool->isCustomTool()) {
+            return false;
+        }
+
+        return $currentUser->isContentManager();
     }
 
     public function seeAllFields(User $user): bool

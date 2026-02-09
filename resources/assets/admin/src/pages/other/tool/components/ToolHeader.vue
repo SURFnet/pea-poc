@@ -25,7 +25,7 @@
                         />
 
                         <FollowToolButton
-                            v-if="!editing"
+                            v-if="showFollowing && !editing"
                             :following="following"
                             :tool="tool"
                         />
@@ -109,6 +109,10 @@ export default {
         editing: {
             type: Boolean,
             default: false,
+        },
+        showFollowing: {
+            type: Boolean,
+            default: true,
         },
     },
     computed: {

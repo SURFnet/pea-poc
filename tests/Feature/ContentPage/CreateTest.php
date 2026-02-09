@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\ContentPage;
+namespace Tests\Feature\ContentPage;
 
 use Illuminate\Auth\AuthenticationException;
 use Inertia\Testing\AssertableInertia as Assert;

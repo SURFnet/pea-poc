@@ -124,6 +124,8 @@
                         />
                     </div>
 
+                    <ShareLinkButton :link="tool.share_url" />
+
                     <div v-if="showSupportBox()">
                         <PageDivider />
 
@@ -152,6 +154,7 @@ import EducationTab from '@/pages/our/tool/components/tabs/EducationTab.vue';
 import { getFilterUrlByTag } from '@/helpers/tool-filter-url';
 import ToolTip from '@/components/ToolTip.vue';
 import InstituteBox from '@/components/InstituteBox.vue';
+import ShareLinkButton from '@/components/ShareLinkButton.vue';
 import SidebarToolCard from '@/components/SidebarToolCard.vue';
 
 export default {
@@ -168,6 +171,7 @@ export default {
         ToolTabs,
         TagPill,
         PageDivider,
+        ShareLinkButton,
         SupportBox,
     },
     layout: Layout,

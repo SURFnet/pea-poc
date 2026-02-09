@@ -25,7 +25,7 @@ class TokenMismatchExceptionTest extends TestCase
     {
         $this
             ->followingRedirects()
-            ->post(route('account.login-as-super-admin'), [
+            ->post(route('account.login-as-test-user'), [
                 '_token' => 'INVALID_TOKEN',
                 'email'  => 'admin@paqt.com',
             ])
@@ -37,7 +37,7 @@ class TokenMismatchExceptionTest extends TestCase
     public function gives_the_proper_response_for_an_api(): void
     {
         $this
-            ->postJson(route('account.login-as-super-admin'), [
+            ->postJson(route('account.login-as-test-user'), [
                 '_token' => 'INVALID_TOKEN',
                 'email'  => 'admin@paqt.com',
             ])

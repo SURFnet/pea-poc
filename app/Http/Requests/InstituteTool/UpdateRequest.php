@@ -12,7 +12,14 @@ class UpdateRequest extends BaseRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('updateForInstitute', $this->route('tool'));
+        /** @var Tool $tool */
+        $tool = $this->route('tool');
+
+        if ($tool->isCustomTool()) {
+            return $this->user()->can('update', $tool);
+        }
+
+        return $this->user()->can('updateForInstitute', $tool);
     }
 
     public function rules(): array

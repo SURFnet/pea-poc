@@ -22,6 +22,7 @@ class ConceptToolResource extends BaseToolResource
         return [
             ...parent::toArray($request),
 
+            'slug'         => $concept->originalVersion->slug,
             'id'           => $concept->originalVersion->id,
             'is_published' => $concept->originalVersion->is_published,
 

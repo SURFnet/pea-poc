@@ -31,8 +31,11 @@ Route::group(
 
         Route::put('{tool}/update/{continue?}', [ToolController::class, 'update'])
             ->name('update');
+
+        Route::post('{tool}/convert', [ToolController::class, 'convert'])
+            ->name('convert');
     }
 );
 
 Route::resource('tool', ToolController::class)
-    ->except(['show', 'store', 'update', 'destroy']);
+    ->only(['index', 'create', 'edit', 'show']);

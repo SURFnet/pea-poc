@@ -207,7 +207,7 @@ export default {
             const showRoute = tool.institute ? 'our.tool.show' : 'other.tool.show';
 
             return route(showRoute, {
-                tool: tool.id,
+                tool: tool.slug,
             });
         },
         /**

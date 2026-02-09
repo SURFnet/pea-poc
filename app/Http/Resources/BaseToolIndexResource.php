@@ -26,7 +26,8 @@ abstract class BaseToolIndexResource extends JsonResource
         $tool = $this->getTool();
 
         return [
-            'id' => $tool->id,
+            'slug' => $tool->slug,
+            'id'   => $tool->id,
 
             ...$this->getToolData($tool),
         ];
@@ -43,6 +44,7 @@ abstract class BaseToolIndexResource extends JsonResource
 
         return [
             'name' => $tool->name,
+            'slug' => $tool->slug,
 
             'description_short_stripped_tags' => Format::asSimpleHtml($shortDescription),
 
