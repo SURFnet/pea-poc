@@ -10,15 +10,20 @@ use App\Http\Resources\InstituteResource;
 use App\Http\Resources\Our\ToolResource;
 use App\Models\Institute;
 use App\Models\Tool;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
 class ToolController extends Controller
 {
-    public function show(Request $request, Tool $tool): Response
+    public function show(Request $request, Tool $tool): Response|RedirectResponse
     {
         $this->authorize('viewOur', $tool);
+
+        if ($request->fullUrl() !== route('our.tool.show', $tool)) {
+            return redirect()->route('our.tool.show', $tool);
+        }
 
         return Inertia::render('our/tool/Show', [
             'permissions' => [

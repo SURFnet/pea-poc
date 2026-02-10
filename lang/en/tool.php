@@ -79,6 +79,7 @@ return [
         'how_does_it_work_nl'  => 'How does it work (NL)',
         'complexity'           => 'Complexity',
         'has_concept'          => 'Concept available',
+        'is_custom'            => 'Is custom',
 
         'is_true'  => 'Yes',
         'is_false' => 'No',
@@ -105,5 +106,23 @@ return [
     'has_concept' => [
         'yes' => 'Yes',
         'no'  => 'No',
+    ],
+
+    'is_custom' => [
+        'yes' => 'Yes',
+        'no'  => 'No',
+    ],
+
+    'institute_tool' => [
+        'singular' => 'Institute tool',
+        'plural'   => 'Institute tools',
+    ],
+
+    'custom_tool' => [
+        'singular' => 'Custom tool',
+        'plural'   => 'Custom tools',
+
+        'institute_tool_status'      => 'Institute tool status',
+        'has_institute_tool_concept' => 'Institute tool concept available',
     ],
 ];

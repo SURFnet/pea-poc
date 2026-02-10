@@ -58,7 +58,7 @@ export default {
     data() {
         return {
             form: useForm({
-                tool: this.tool ? this.tool.id : null,
+                tool: this.tool ? this.tool.slug : null,
                 subject: '',
                 message: '',
             }),

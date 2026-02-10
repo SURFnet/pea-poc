@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Account;
 
+use App\Enums\Auth\Role;
 use App\Http\Middleware\VerifyCsrfToken;
 use Inertia\Testing\AssertableInertia as Assert;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -12,7 +13,7 @@ use Tests\TestCase;
 class LoginTest extends TestCase
 {
     /** @test */
-    public function has_the_login_as_super_admin_button_on_development_environments(): void
+    public function has_the_option_to_login_as_test_user_on_development_environments(): void
     {
         $this
             ->get(route('account.login'))
@@ -20,15 +21,24 @@ class LoginTest extends TestCase
             ->assertInertia(
                 fn (Assert $page) => $page
                     ->component('account/Login')
-                    ->where('canLoginAsSuperAdmin', true)
+                    ->where('allowTestUserLogin', true)
             );
     }
 
-    /** @test */
-    public function can_login_as_super_admin_on_development_environments(): void
+    /**
+     * @test
+     *
+     * @dataProvider userRolesProvider
+     */
+    public function can_login_as_role_on_development_environments(string $role): void
     {
+        $this->withoutExceptionHandling();
         $this
-            ->post(route('account.login-as-super-admin'));
+            ->post(route('account.login-as-test-user'), [
+                'role' => $role,
+            ])
+
+            ->assertRedirect();
 
         $this->assertAuthenticated();
     }
@@ -40,32 +50,56 @@ class LoginTest extends TestCase
         $this->admin->save();
 
         $this
-            ->post(route('account.login-as-super-admin'))
-
+            ->post(route('account.login-as-test-user'), [
+                'role' => 'admin',
+            ])
             ->assertRedirect(LaravelLocalization::localizeUrl(route('home.index'), 'nl'));
     }
 
-    /** @test */
-    public function can_login_as_super_admin_on_staging_environments(): void
+    /**
+     * @test
+     *
+     * @dataProvider userRolesProvider
+     */
+    public function can_login_as_role_on_staging_environments(string $role): void
     {
         $this->withoutMiddleware(VerifyCsrfToken::class);
 
         $this->app['env'] = 'stage';
 
         $this
-            ->post(route('account.login-as-super-admin'));
+            ->post(route('account.login-as-test-user'), [
+                'role' => $role,
+            ])
+
+            ->assertRedirect();
 
         $this->assertAuthenticated();
     }
 
-    /** @test */
-    public function does_not_have_the_login_as_super_admin_button_on_production(): void
+    /**
+     * @test
+     *
+     * @dataProvider userRolesProvider
+     */
+    public function does_not_have_the_option_to_login_with_test_users_on_production(string $role): void
     {
         $this->app['env'] = 'production';
 
-        $this
-            ->post(route('account.login-as-super-admin'));
+        $this->post(route('account.login-as-test-user'), [
+            'role' => $role,
+        ]);
 
         $this->assertGuest();
+    }
+
+    public function userRolesProvider(): array
+    {
+        return [
+            ['role' => 'admin'],
+            ['role' => Role::TEACHER],
+            ['role' => Role::INFORMATION_MANAGER],
+            ['role' => Role::CONTENT_MANAGER],
+        ];
     }
 }

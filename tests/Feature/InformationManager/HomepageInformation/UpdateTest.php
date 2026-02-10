@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Feature\InformationManager\HomepageInformation;
+namespace Tests\Feature\InformationManager\HomepageInformation;
 
 use App\Models\Institute;
 use Illuminate\Auth\AuthenticationException;

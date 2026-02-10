@@ -16,6 +16,20 @@
             </InertiaLink>
 
             <InertiaLink
+                :href="route('information-manager.custom-tool.index')"
+                class="group | h-16 w-full | flex flex-row items-center | no-underline font-light text-gray-300 border-l-4 hover:no-underline | space-x-2 pl-6 sm:-mr-6"
+                :class="menuClasses('information-manager.custom-tool.*')"
+            >
+                <div class="w-8">
+                    <FolderCogIcon class="text-gray-300 group-hover:text-white" />
+                </div>
+
+                <p class="group-hover:text-white capitalize">
+                    {{ trans('tool.custom_tool.plural') }}
+                </p>
+            </InertiaLink>
+
+            <InertiaLink
                 :href="route('information-manager.tag.index')"
                 class="group | h-16 w-full | flex flex-row items-center | no-underline font-light text-gray-300 border-l-4 hover:no-underline | space-x-2 pl-6 sm:-mr-6"
                 :class="menuClasses('information-manager.tag.*')"
@@ -46,7 +60,7 @@
             <InertiaLink
                 :href="route('information-manager.homepage-information.edit')"
                 class="group | h-16 w-full | flex flex-row items-center | no-underline font-light text-gray-300 border-l-4 hover:no-underline | space-x-2 pl-6 sm:-mr-6"
-                :class="menuClasses('information-manager.institute.*')"
+                :class="menuClasses('information-manager.homepage-information.*')"
             >
                 <div class="w-8">
                     <ELearningMonitorIcon class="text-gray-300 group-hover:text-white" />
@@ -82,9 +96,11 @@ import AddIcon from '@/components/svg/icons/surf/AddIcon';
 import CardViewIcon from '@/components/svg/icons/surf/CardViewIcon';
 import ELearningMonitorIcon from '@/components/svg/icons/surf/ELearningMonitorIcon';
 import MultipleCircleIcon from '@/components/svg/icons/surf/MultipleCircleIcon';
+import FolderCogIcon from '@/components/FolderCogIcon.vue';
 
 export default {
     components: {
+        FolderCogIcon,
         MultipleCircleIcon,
         SearchIcon,
         AddIcon,

@@ -57,6 +57,23 @@ class ToolController extends Controller
         ]);
     }
 
+    public function show(Request $request, Tool $tool): RedirectResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+        $institute = $user->institute;
+        $hasOurTool = $institute && Tool::forOur($institute)->whereKey($tool->getKey())->exists();
+
+        $namespace = $hasOurTool ? 'our': 'other';
+
+        return redirect()->route($namespace . '.tool.show', $tool);
+    }
+
+    public function indexRedirect(): RedirectResponse
+    {
+        return redirect()->route('tool.index');
+    }
+
     public function changeFollowingStatus(
         Request $request,
         Tool $tool,

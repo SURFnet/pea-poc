@@ -9,7 +9,11 @@
             tags.async=!0,tags.src="https://surfnl.containers.piwik.pro/"+id+".js"+qPString,scripts.parentNode.insertBefore(tags,scripts);
             !function(a,n,i){a[n]=a[n]||{};for(var c=0;c<i.length;c++)!function(i){a[n][i]=a[n][i]||{},a[n][i].api=a[n][i].api||function(){var a=[].slice.call(arguments,0);"string"==typeof a[0]&&window[dataLayerName].push({event:n+"."+i+":"+a[0],parameters:[].slice.call(arguments,1)})}}(i[c])}(window,"ppms",["tm","cm"]);
         })(window, document, 'dataLayer', '{{ $piwikKey }}');
-    @endif
 
-    window.dataLayer = window.dataLayer || [];
+        window.dataLayer = window.dataLayer || [];
+
+        @auth
+            window.dataLayer.push(@js(\App\Helpers\PiwikHelper::getPiwikDatalayer()));
+        @endauth
+    @endif
 </script>

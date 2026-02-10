@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\ContentManager;
 
+use App\Actions\CustomTool\ConvertToGenericToolAction;
 use App\Actions\PendingToolEdit\ClearAction;
 use App\Actions\PendingToolEdit\CreateAction as CreatePendingEditAction;
 use App\Actions\Tool\Concept\DiscardAction;
@@ -18,6 +19,7 @@ use App\Helpers\Auth;
 use App\Helpers\Country;
 use App\Helpers\Index;
 use App\Helpers\ToolPrefillData;
+use App\Http\Controllers\Concerns\HasToolTags;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\IndexRequest;
 use App\Http\Requests\Tool\PublishRequest;
@@ -26,9 +28,10 @@ use App\Http\Requests\Tool\UpdateRequest;
 use App\Http\Resources\ContentManager\ConceptToolResource;
 use App\Http\Resources\ContentManager\ToolIndexResource;
 use App\Http\Resources\ContentManager\ToolResource;
+use App\Http\Resources\ExperienceResource;
+use App\Http\Resources\InstituteResource;
 use App\Http\Resources\PaginationResource;
 use App\Http\Resources\PendingToolEditResource;
-use App\Http\Resources\TagResource;
 use App\Http\Resources\ToolLogResource;
 use App\Models\Tag;
 use App\Models\Tool;
@@ -42,6 +45,8 @@ use Spatie\QueryBuilder\QueryBuilder;
 
 class ToolController extends Controller
 {
+    use HasToolTags;
+
     public function index(IndexRequest $request): Response
     {
         $this->authorize('viewAll', Tool::class);
@@ -51,6 +56,7 @@ class ToolController extends Controller
                 AllowedFilter::partial('name'),
                 AllowedFilter::scope('status', 'forStatus'),
                 AllowedFilter::scope('feature', 'forFeature'),
+                AllowedFilter::scope('is_custom', 'custom'),
             ])
             ->orderBy('name');
 
@@ -70,12 +76,25 @@ class ToolController extends Controller
         ]);
     }
 
+    public function show(Tool $tool): Response
+    {
+        $this->authorize('view', $tool);
+
+        return Inertia::render('content-manager/tool/Show', [
+            'tool'        => new ToolResource($tool),
+            'experiences' => ExperienceResource::collection($tool->experiences()->latest()->get()),
+            'institute'   => new InstituteResource($tool->institute),
+
+            'backUrl' => route('content-manager.tool.index'),
+        ]);
+    }
+
     public function create(): Response
     {
         $this->authorize('create', Tool::class);
 
         return Inertia::render('content-manager/tool/Create', [
-            ...$this->getToolTagResources(),
+            ...$this->getToolTags(),
             'countries' => Country::getAsSelect(false),
             'prefills'  => ToolPrefillData::get(),
         ]);
@@ -108,7 +127,7 @@ class ToolController extends Controller
 
         return Inertia::render('content-manager/tool/Edit', [
             'tool' => new ConceptToolResource($concept),
-            ...$this->getToolTagResources(),
+            ...$this->getToolTags(),
             'countries'   => Country::getAsSelect(false),
             'pendingEdit' => $pendingEdit ? new PendingToolEditResource($pendingEdit) : null,
         ]);
@@ -183,7 +202,7 @@ class ToolController extends Controller
 
         $user = Auth::user();
 
-        $clearAction->execute($tool, $user, null);
+        $clearAction->execute($tool, $user);
 
         if ((new SafelyDiscardAction())->execute($tool)) {
             flash(trans('message.concept-discarded', [
@@ -194,21 +213,14 @@ class ToolController extends Controller
         return redirect()->route('content-manager.tool.index');
     }
 
-    private function getToolTagResources(): array
+    public function convert(Tool $tool, ConvertToGenericToolAction $convertAction): RedirectResponse
     {
-        return [
-            'features'                => TagResource::collection(Tag::whereType(TagTypes::FEATURES)->get()),
-            'softwareTypes'           => TagResource::collection(Tag::whereType(TagTypes::SOFTWARE_TYPES)->get()),
-            'devices'                 => TagResource::collection(Tag::whereType(TagTypes::DEVICES)->get()),
-            'standards'               => TagResource::collection(Tag::whereType(TagTypes::STANDARDS)->get()),
-            'operatingSystems'        => TagResource::collection(Tag::whereType(TagTypes::OPERATING_SYSTEMS)->get()),
-            'dataProcessingLocations' => TagResource::collection(
-                Tag::whereType(TagTypes::DATA_PROCESSING_LOCATIONS)->get()
-            ),
-            'certifications' => TagResource::collection(Tag::whereType(TagTypes::CERTIFICATIONS)->get()),
-            'workingMethods' => TagResource::collection(Tag::whereType(TagTypes::WORKING_METHODS)->get()),
-            'targetGroups'   => TagResource::collection(Tag::whereType(TagTypes::TARGET_GROUPS)->get()),
-            'complexities'   => TagResource::collection(Tag::whereType(TagTypes::COMPLEXITY)->get()),
-        ];
+        $this->authorize('convert', $tool);
+
+        $newTool = $convertAction->execute($tool);
+
+        flash(trans('message.tool-converted', ['entity' => $tool->name]), 'success');
+
+        return redirect()->route('content-manager.tool.edit', $newTool);
     }
 }

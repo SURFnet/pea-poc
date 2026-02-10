@@ -20,6 +20,10 @@ return [
             ],
         ],
     ],
+    'copy_link' => [
+        'link_copied' => 'Link copied to clipboard',
+        'copy_link'   => 'Copy link to clipboard',
+    ],
 
     'share_experience' => [
         'title' => 'Share your experience',

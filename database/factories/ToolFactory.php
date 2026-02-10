@@ -6,8 +6,12 @@ namespace Database\Factories;
 
 use App\Helpers\Country;
 use App\Helpers\File;
+use App\Models\Institute;
+use App\Models\InstituteTool;
 use App\Models\Tool;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 
 /** @extends Factory<\App\Models\Tool> */
 class ToolFactory extends Factory
@@ -26,8 +30,11 @@ class ToolFactory extends Factory
             $publishedAt = $this->faker->dateTimeBetween($createdAt, 'now');
         }
 
+        $name = $this->faker->unique()->sentence(rand(2, 4));
+
         return [
-            'name'                                => $this->faker->unique()->sentence(rand(2, 4)),
+            'name'                                => $name,
+            'slug'                                => fn (array $attributes) => Str::slug($attributes['name']),
             'supplier'                            => $this->faker->text(),
             'supplier_url'                        => $this->faker->url(),
             'description_short_en'                => $this->faker->text(),
@@ -75,14 +82,36 @@ class ToolFactory extends Factory
         ];
     }
 
-    public function published(bool $isPublished = true): Factory
+    public function customTool(Institute $institute = null): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'institute_id' => $institute ?? Institute::factory()->create(),
+        ]);
+    }
+
+    public function withInstituteTool(array $attributes = [], int $count = 1): static
+    {
+        return $this->has(
+            InstituteTool::factory()
+                ->count($count)
+                ->state(function (array $nestedAttributes, Model $parent) use ($attributes): array {
+                    /** @var Tool $parent */
+                    return array_merge(
+                        $attributes,
+                        $parent->institute_id ? ['institute_id' => $parent->institute_id] : []
+                    );
+                })
+        );
+    }
+
+    public function published(bool $isPublished = true): static
     {
         return $this->state(fn () => [
             'published_at' => $isPublished ? $this->faker->dateTimeThisYear : null,
         ]);
     }
 
-    public function withImages(): Factory
+    public function withImages(): static
     {
         return $this->state(fn () => [
             'logo_filename' => function (): string {

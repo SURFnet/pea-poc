@@ -16,7 +16,11 @@ class UpdateRequest extends BaseRequest
     public function rules(): array
     {
         return array_merge(parent::rules(), [
-            'name' => ['required', Rule::unique('tools')->ignoreModel($this->route('tool')), 'db_string'],
+            'name' => [
+                'required',
+                Rule::unique('tools')->ignoreModel($this->route('tool')),
+                'db_string',
+            ],
         ]);
     }
 }

@@ -148,18 +148,22 @@ class ToolController extends Controller
             'tool'                => new ToolResource($tool),
             'backUrl'             => route('information-manager.tool.index'),
             'pendingEdit'         => $pendingEdit
-                ? new PendingToolEditResource($pendingEdit) : null, 'alternativeTools' => ToolResource::collection(
-                    InstituteTool::forInstitute($institute)
+                ? new PendingToolEditResource($pendingEdit) : null,
+            'alternativeTools' => ToolResource::collection(
+                InstituteTool::forInstitute($institute)
                     ->whereIn('status', [Status::ALLOWED_UNDER_CONDITIONS, Status::ALLOWED])
                     ->get()
                     ->pluck('tool')
-                ),
+            ),
         ]);
     }
 
     public function update(UpdateRequest $request, Tool $tool, bool $continue = false): RedirectResponse
     {
+        $this->authorize('updateForInstitute', $tool);
+
         $user = Auth::user();
+
         (new UpdateConceptAction())->execute($tool, $user, $request->validated());
 
         flash(trans('message.data-saved'), 'success');
@@ -173,6 +177,8 @@ class ToolController extends Controller
 
     public function publish(PublishRequest $request, PublishConceptAction $publishAction, Tool $tool): RedirectResponse
     {
+        $this->authorize('publishForInstitute', $tool);
+
         $user = Auth::user();
         $institute = $user->institute;
 
@@ -191,6 +197,8 @@ class ToolController extends Controller
 
     public function unpublish(PublishRequest $request, Tool $tool): RedirectResponse
     {
+        $this->authorize('publishForInstitute', $tool);
+
         $user = Auth::user();
         $institute = $user->institute;
 

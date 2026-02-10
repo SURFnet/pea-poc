@@ -8,9 +8,13 @@ use App\Enums\Tags\TagTypes;
 use App\Helpers\Country;
 use App\Helpers\Format;
 use App\Helpers\Locale;
+use App\Models\ConceptInstituteTool;
+use App\Models\ConceptTool;
+use App\Models\InstituteTool;
 use App\Models\Tool;
 use App\Traits\Resources\WithImage;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 /** @mixin \App\Models\Tool */
 class ToolResource extends JsonResource
@@ -32,7 +36,9 @@ class ToolResource extends JsonResource
         $dataProcessingLocation = $tool->tagsWithType(TagTypes::DATA_PROCESSING_LOCATIONS)->pluck('id');
 
         return [
-            'id' => $tool->id,
+            'id'        => $tool->id,
+            'slug'      => $tool->slug,
+            'share_url' => $this->getShareUrl($tool),
 
             'name'                            => $tool->name,
             'supplier'                        => $tool->supplier,
@@ -86,5 +92,17 @@ class ToolResource extends JsonResource
 
             'updated_at' => $tool->updated_at->toW3cString(),
         ];
+    }
+
+    /**
+     * If a (child) Tool model does not provide a slug, fallback to it's ID as the {tool} route key.
+     */
+    private function getShareUrl(Tool|ConceptInstituteTool|ConceptTool|InstituteTool $tool): string|false
+    {
+        if (!$tool->slug) {
+            $tool->slug = $tool->id;
+        }
+
+        return LaravelLocalization::getLocalizedURL(false, route('tool.show', ['tool' => $tool]));
     }
 }

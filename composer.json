@@ -87,8 +87,6 @@
             "@php artisan test --parallel"
         ],
         "test-coverage": [
-            "php artisan migrate --env=testing --no-ansi",
-            "php artisan bootstrap:application --env=testing --no-ansi",
             "./vendor/bin/phpunit --coverage-html public/tests-report"
         ],
         "test-coverage-xml": [

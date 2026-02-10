@@ -107,6 +107,14 @@ return [
         ],
     ],
 
+    'custom-tool' => [
+        'show' => [
+            'headings' => [
+                'institute' => 'Created by',
+            ],
+        ],
+    ],
+
     'other' => [
         'tool' => [
             'index' => [
@@ -189,6 +197,7 @@ return [
                 ],
 
                 'content_manager_filled_out' => 'The following information on this tool has been filled out by the content manager',
+                'tool_information'           => 'Tool information',
                 'none'                       => 'none',
             ],
         ],
@@ -279,6 +288,25 @@ return [
             ],
             'index' => [
                 'title' => 'Manage our tools',
+            ],
+            'log' => [
+                'title' => 'Edit log',
+            ],
+        ],
+
+        'custom-tool' => [
+            'index' => [
+                'title'   => 'All Custom Tools',
+                'heading' => 'All Custom Tools',
+            ],
+            'create' => [
+                'title'   => 'Add a new Custom Tool',
+                'heading' => 'Add a new Custom Tool',
+            ],
+            'edit' => [
+                'title'    => 'Edit :name',
+                'heading'  => 'Edit :name',
+                'view_log' => 'View log',
             ],
             'log' => [
                 'title' => 'Edit log',

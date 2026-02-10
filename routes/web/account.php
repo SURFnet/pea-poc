@@ -18,8 +18,8 @@ Route::group(
         Route::get('', [AccountController::class, 'login'])
             ->name('login');
 
-        Route::post('login-as-super-admin', [AccountController::class, 'loginAsSuperAdmin'])
-            ->name('login-as-super-admin');
+        Route::post('login-as-test-user', [AccountController::class, 'loginAsTestUser'])
+            ->name('login-as-test-user');
 
         Route::post('logout', [AccountController::class, 'logout'])
             ->name('logout');

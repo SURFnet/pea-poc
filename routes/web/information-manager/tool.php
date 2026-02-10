@@ -5,6 +5,9 @@ declare(strict_types=1);
 use App\Http\Controllers\InformationManager\ToolController;
 use Illuminate\Support\Facades\Route;
 
+/**
+ * @routePrefix("information-manager.")
+ */
 Route::group(
     [
         'prefix' => 'tool/{tool}',

@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Our\Tool;
 
+use App\Actions\CustomTool\ConvertToGenericToolAction;
 use App\Enums\Auth\Role;
 use App\Models\Experience;
+use App\Models\Institute;
 use App\Models\InstituteTool;
 use App\Models\Tool;
 use App\Models\User;
@@ -35,6 +37,27 @@ class ShowTest extends TestCase
                 fn (Assert $page) => $page
                     ->component('our/tool/Show')
             );
+    }
+
+    /** @test */
+    public function old_custom_tool_url_is_redirected_to_new_url(): void
+    {
+        $tool = Tool::factory(['institute_id' => Institute::factory()])->published()->create();
+
+        $this->informationManager->institute->tools()->attach($tool, [
+            'published_at' => now(),
+        ]);
+
+        $oldRoute = route('our.tool.show', $tool);
+        $action = new ConvertToGenericToolAction();
+        $action->execute($tool);
+        $newRoute = route('our.tool.show', $tool);
+
+        $this
+            ->actingAs($this->informationManager)
+            ->get($oldRoute)
+
+            ->assertRedirect($newRoute);
     }
 
     /** @test */

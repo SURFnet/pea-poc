@@ -27,7 +27,7 @@
                 <FormFooter class="flex justify-between mt-6">
                     <Btn
                         target="_blank"
-                        :href="route('content-manager.tool.log', { tool: tool.id })"
+                        :href="route('content-manager.tool.log', { tool: tool.slug })"
                         variant="default"
                     >
                         {{ trans('page.content-manager.tool.edit.view_log') }}

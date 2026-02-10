@@ -19,6 +19,8 @@ return [
 
     'request_for_change_sent' => 'Your request for change has been sent. You will receive a confirmation by e-mail.',
 
+    'tool-converted' => ':Entity has been converted to a generic tool.',
+
     'update-sent' => 'Your message is sent.',
 
     'file-too-large'   => 'The file is too large.',

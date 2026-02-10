@@ -69,12 +69,23 @@ class Institute extends Model
         return $this
             ->belongsToMany(Tool::class)
             ->whereNotNull('tools.published_at')
+            ->whereNull('tools.institute_id')
             ->withTimestamps()
             ->withPivot([
                 'status',
                 'published_at',
                 'updated_at',
             ]);
+    }
+
+    public function customTools(): HasMany
+    {
+        return $this->hasMany(Tool::class);
+    }
+
+    public function hasCustomTool(Tool $tool): bool
+    {
+        return $this->customTools->find($tool) !== null;
     }
 
     public function scopeUsingTool(Builder $query, Tool $tool): Builder

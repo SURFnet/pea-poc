@@ -9,15 +9,20 @@
                 {{ trans('action.login-with-surfconext') }}
             </Btn>
 
-            <Btn
-                v-if="canLoginAsSuperAdmin"
-                variant="primary"
-                as="button"
-                class="w-full | justify-center"
-                @click="loginAsSuperAdmin"
-            >
-                {{ trans('action.login-as-super-admin') }}
-            </Btn>
+            <template v-if="allowTestUserLogin">
+                <p>{{ trans('auth.test-users') }}:</p>
+
+                <Btn
+                    v-for="role in supportedTestRoles"
+                    :key="role"
+                    variant="primary"
+                    as="button"
+                    class="w-full justify-center"
+                    @click="loginAsTestUser(role)"
+                >
+                    {{ trans('action.login-as-test-user', { role: trans(`auth.roles.${role}`) }) }}
+                </Btn>
+            </template>
         </nav>
     </div>
 </template>
@@ -34,21 +39,27 @@ export default {
     },
     layout: Layout,
     props: {
-        canLoginAsSuperAdmin: {
+        allowTestUserLogin: {
             type: Boolean,
             default: false,
+        },
+        supportedTestRoles: {
+            type: Array,
+            default: () => [],
         },
     },
     methods: {
         /**
-         * Handles the form submission.
+         * @param {string} role
          */
-        loginAsSuperAdmin() {
-            router.post(route('account.login-as-super-admin'));
+        loginAsTestUser(role) {
+            router.post(route('account.login-as-test-user'), {
+                role,
+            });
         },
     },
     /**
-     * The reactive metainfo object.
+     * The reactive meta info object.
      *
      * @returns {object}
      */

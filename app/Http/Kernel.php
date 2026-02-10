@@ -61,7 +61,7 @@ class Kernel extends HttpKernel
         'cache.headers'        => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can'                  => \Illuminate\Auth\Middleware\Authorize::class,
         'guest'                => \App\Http\Middleware\RedirectIfAuthenticated::class,
-        'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LaravelLocalizationRedirectFilter::class,
+        'localizationRedirect' => \Mcamara\LaravelLocalization\Middleware\LocaleSessionRedirect::class,
         'signed'               => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle'             => \Illuminate\Routing\Middleware\ThrottleRequests::class,
     ];

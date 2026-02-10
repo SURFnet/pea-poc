@@ -21,7 +21,9 @@ class ToolResource extends BaseToolResource
 
         return [
             ...parent::toArray($request),
+            'total_experiences' => $this->experiences->count(),
 
+            'slug'         => $tool->slug,
             'id'           => $tool->id,
             'is_published' => $tool->is_published,
 
