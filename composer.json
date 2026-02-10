@@ -89,6 +89,11 @@
         "test-coverage": [
             "./vendor/bin/phpunit --coverage-html public/tests-report"
         ],
+        "test-coverage-xml": [
+            "php artisan migrate --env=testing --no-ansi",
+            "php artisan bootstrap:application --env=testing --no-ansi",
+            "./vendor/bin/phpunit --coverage-clover ./coverage.xml"
+        ],
         "test-fresh": [
             "php artisan migrate:fresh --env=testing --no-ansi",
             "php artisan bootstrap:application --env=testing --no-ansi",
