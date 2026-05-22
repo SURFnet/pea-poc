@@ -11,8 +11,8 @@ _ide_helper_models.php
 
 #assets
 */**/node_modules/*
-public/dist/
-public/vendor/datatables/buttons.server-side.js
+public_html/dist/
+public_html/vendor/datatables/buttons.server-side.js
 
 #framework
 /vendor
@@ -28,7 +28,7 @@ tests/Browser/screenshots/(?!(index\.html|\.htaccess|\.gitignore)$).+
 .phpunit.result.cache
 coverage/
 report/
-public/tests-report/
+public_html/tests-report/
 
 #build
 build/
