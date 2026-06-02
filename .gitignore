@@ -43,3 +43,5 @@ storage/framework/views/(?!(index\.html|\.htaccess|\.gitignore)$).+
 storage/framework/sessions/(?!(index\.html|\.htaccess|\.gitignore)$).+
 storage/framework/cache/(?!(index\.html|\.htaccess|\.gitignore)$).+
 storage/logs/(?!(index\.html|\.htaccess|\.gitignore)$).+
+
+docker-compose.override.yaml
